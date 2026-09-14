@@ -18,17 +18,23 @@ export default function PublicPortfolio() {
   const [categories, setCategories] = useState([]);
   const [projects, setProjects] = useState([]);
   const [allProjects, setAllProjects] = useState([]); // For counting totals
+  const [settings, setSettings] = useState({ teamName: 'Dont Worry' });
   const [activeCategory, setActiveCategory] = useState('all');
   const [selectedProject, setSelectedProject] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch categories & all projects once
+  // Fetch categories, all projects, and settings once
   useEffect(() => {
-    Promise.all([api.get('/categories'), api.get('/projects')])
-      .then(([catRes, projRes]) => {
+    Promise.all([
+      api.get('/categories'),
+      api.get('/projects'),
+      api.get('/settings').catch(() => ({ data: { teamName: 'Dont Worry' } })),
+    ])
+      .then(([catRes, projRes, setRes]) => {
         setCategories(catRes.data);
         setAllProjects(projRes.data);
         setProjects(projRes.data);
+        if (setRes.data) setSettings(setRes.data);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -62,7 +68,10 @@ export default function PublicPortfolio() {
 
       <main>
         {/* 1. Hero Section */}
-        <HeroSection totalProjects={allProjects.length || 78} />
+        <HeroSection
+          totalProjects={allProjects.length || 78}
+          teamName={settings?.teamName || 'Dont Worry'}
+        />
 
         {/* 2. Platform Badges Marquee */}
         <PlatformMarquee />

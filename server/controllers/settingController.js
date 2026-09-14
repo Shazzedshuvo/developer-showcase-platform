@@ -12,7 +12,8 @@ const getSettings = asyncHandler(async (req, res) => {
   if (!settings) {
     settings = await Settings.create({
       siteName: 'Shazzed Shuvo',
-      tagline: 'Web Specialist & CMS Architect',
+      tagline: 'Web Specialist & Web Developer',
+      teamName: 'Dont Worry',
       email: 'shazzedshuvo@gmail.com',
       availableForHire: true,
     });
@@ -30,10 +31,11 @@ const updateSettings = asyncHandler(async (req, res) => {
     settings = new Settings();
   }
 
-  const { siteName, tagline, email, availableForHire } = req.body;
+  const { siteName, tagline, teamName, email, availableForHire } = req.body;
 
   if (siteName) settings.siteName = siteName;
   if (tagline !== undefined) settings.tagline = tagline;
+  if (teamName !== undefined) settings.teamName = teamName;
   if (email) settings.email = email;
   if (availableForHire !== undefined) {
     settings.availableForHire = availableForHire === 'true' || availableForHire === true;

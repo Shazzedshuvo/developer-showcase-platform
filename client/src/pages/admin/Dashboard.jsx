@@ -142,8 +142,13 @@ export default function Dashboard() {
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
               <span>Admin Analytics &amp; Control Center</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Welcome back, {settings?.siteName || 'Shazzed'} 👋
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex flex-wrap items-center gap-3">
+              <span>Welcome back, {settings?.siteName || 'Shazzed'} 👋</span>
+              {settings?.teamName && (
+                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                  Team: {settings.teamName}
+                </span>
+              )}
             </h1>
             <p className="text-xs sm:text-sm text-slate-400 max-w-xl mt-1 leading-relaxed">
               Your portfolio is fully synchronized with MongoDB Atlas &amp; Cloudinary CDN. Manage 78+ client projects, live categories, and brand settings in real-time.

@@ -24,6 +24,11 @@ const settingsSchema = new mongoose.Schema(
       default: 'Web Specialist & Web Developer',
       trim: true,
     },
+    teamName: {
+      type: String,
+      default: 'Dont Worry',
+      trim: true,
+    },
     email: {
       type: String,
       default: 'shazzedshuvo@gmail.com',

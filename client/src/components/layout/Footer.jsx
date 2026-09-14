@@ -7,6 +7,7 @@ export default function Footer() {
   const [settings, setSettings] = useState({
     siteName: 'Shazzed Shuvo',
     tagline: 'Web Specialist & Web Developer',
+    teamName: 'Dont Worry',
     logo: '',
   });
 
@@ -41,9 +42,16 @@ export default function Footer() {
                   </div>
                 </div>
               )}
-              <span className="font-bold text-slate-900 dark:text-white text-lg tracking-tight">
-                {settings.siteName || 'Shazzed Shuvo'}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-slate-900 dark:text-white text-lg tracking-tight">
+                  {settings.siteName || 'Shazzed Shuvo'}
+                </span>
+                {settings.teamName && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                    Team: {settings.teamName}
+                  </span>
+                )}
+              </div>
             </div>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-sm leading-relaxed">
               Professional Web Developer &amp; CMS Specialist creating high-converting digital experiences on Wix Studio, Squarespace, Webflow, Shopify &amp; Full-Stack code.

@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { ArrowDown, Star, Sparkles, FolderCheck, CheckCircle2, MessageSquare, Zap, Globe, Layers } from 'lucide-react';
 import EarthGlobe from './EarthGlobe';
 
-export default function HeroSection({ totalProjects = 78 }) {
+export default function HeroSection({ totalProjects = 78, teamName = 'Dont Worry' }) {
   const stats = [
     { label: 'Live Projects Built', value: `${totalProjects}+`, icon: FolderCheck },
     { label: 'Client Satisfaction', value: '100%', icon: Star },
@@ -65,11 +65,15 @@ export default function HeroSection({ totalProjects = 78 }) {
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
           <span className="text-slate-800 dark:text-slate-300">Wix Studio, Squarespace &amp; CMS Specialist</span>
-          <span className="text-slate-400 dark:text-zinc-600">•</span>
-          <span className="text-indigo-600 dark:text-indigo-400 font-bold flex items-center gap-1">
-            <Sparkles className="w-3 h-3 text-indigo-500" />
-            Agency &amp; Corporate Experience
-          </span>
+          {teamName && (
+            <>
+              <span className="text-slate-400 dark:text-zinc-600">•</span>
+              <span className="text-indigo-600 dark:text-indigo-400 font-bold flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-indigo-500" />
+                Team {teamName}
+              </span>
+            </>
+          )}
         </motion.div>
 
         {/* Main Hero Headline */}

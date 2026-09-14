@@ -8,6 +8,7 @@ export default function Settings() {
   const [settings, setSettings] = useState({
     siteName: 'Shazzed Shuvo',
     tagline: 'Web Specialist & Web Developer',
+    teamName: 'Dont Worry',
     email: 'shazzedshuvo@gmail.com',
     availableForHire: true,
     logo: '',
@@ -47,6 +48,7 @@ export default function Settings() {
     const formData = new FormData();
     formData.append('siteName', settings.siteName);
     formData.append('tagline', settings.tagline);
+    formData.append('teamName', settings.teamName || '');
     formData.append('email', settings.email);
     formData.append('availableForHire', settings.availableForHire);
 
@@ -189,15 +191,28 @@ export default function Settings() {
             </div>
           </div>
 
-          <div>
-            <label className="label">Tagline / Role Title</label>
-            <input
-              type="text"
-              className="input"
-              value={settings.tagline}
-              onChange={(e) => setSettings({ ...settings, tagline: e.target.value })}
-              placeholder="e.g. Web Specialist & CMS Architect"
-            />
+          <div className="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label className="label">Tagline / Role Title</label>
+              <input
+                type="text"
+                className="input"
+                value={settings.tagline}
+                onChange={(e) => setSettings({ ...settings, tagline: e.target.value })}
+                placeholder="e.g. Web Specialist & Web Developer"
+              />
+            </div>
+
+            <div>
+              <label className="label">Team / Agency Name (optional)</label>
+              <input
+                type="text"
+                className="input"
+                value={settings.teamName || ''}
+                onChange={(e) => setSettings({ ...settings, teamName: e.target.value })}
+                placeholder="e.g. Dont Worry"
+              />
+            </div>
           </div>
 
           {/* Availability Toggle */}
