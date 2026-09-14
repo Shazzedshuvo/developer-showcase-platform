@@ -53,8 +53,12 @@ export default function FAQSection() {
         {faqs.map((faq, idx) => {
           const isOpen = openIdx === idx;
           return (
-            <div
+            <motion.div
               key={idx}
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.35, delay: idx * 0.06 }}
               className={`card overflow-hidden transition-all duration-200 ${
                 isOpen ? 'border-indigo-500/50 shadow-md' : 'hover:border-slate-300 dark:hover:border-zinc-700'
               }`}
@@ -89,7 +93,7 @@ export default function FAQSection() {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
+            </motion.div>
           );
         })}
       </div>

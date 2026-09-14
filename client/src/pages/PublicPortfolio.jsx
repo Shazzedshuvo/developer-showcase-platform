@@ -71,13 +71,13 @@ export default function PublicPortfolio() {
         <section id="projects" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/20 mb-4">
               <span>Selected Portfolio</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4">
+            <h2 className="text-3xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4">
               Explore 75+ <span className="text-gradient-primary">Client Websites</span>
             </h2>
-            <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+            <p className="text-slate-600 dark:text-slate-400 text-sm sm:text-base leading-relaxed">
               Browse through real client projects built on Wix Studio, Squarespace, Webflow, Shopify, WordPress, and Custom Code.
             </p>
           </div>
