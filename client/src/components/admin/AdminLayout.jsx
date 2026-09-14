@@ -8,6 +8,7 @@ import {
   Star,
   Sliders,
   Users,
+  MessageSquare,
   LogOut,
   Moon,
   Sun,
@@ -22,6 +23,7 @@ import toast from 'react-hot-toast';
 
 const navItems = [
   { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', end: true },
+  { to: '/admin/chat', icon: MessageSquare, label: 'Live Chat Inbox' },
   { to: '/admin/team', icon: Users, label: 'Team Manager' },
   { to: '/admin/projects', icon: FolderOpen, label: 'Projects Manager' },
   { to: '/admin/categories', icon: Tag, label: 'Platform Categories' },
