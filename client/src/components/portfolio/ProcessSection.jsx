@@ -61,7 +61,7 @@ export default function ProcessSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: idx * 0.1 }}
-              className="card p-6 flex flex-col justify-between relative overflow-hidden group hover:border-purple-500/40 transition-all duration-300"
+              className="card p-6 flex flex-col justify-between relative overflow-hidden group card-hover-effect hover:border-purple-500/40 transition-all duration-300"
             >
               {/* Step background number */}
               <div className="absolute top-2 right-3 text-4xl font-extrabold text-slate-200 dark:text-zinc-800/40 group-hover:text-purple-500/20 transition-colors pointer-events-none select-none">

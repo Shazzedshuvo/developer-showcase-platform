@@ -48,7 +48,7 @@ export default function ReviewsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: idx * 0.08 }}
-              className="card p-6 flex flex-col justify-between group hover:border-amber-500/40 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-300"
+              className="card p-6 flex flex-col justify-between group card-hover-effect hover:border-amber-500/40 hover:shadow-xl hover:shadow-amber-500/5 transition-all duration-300"
             >
               <div>
                 {/* Top Row: Stars + Platform Badge */}

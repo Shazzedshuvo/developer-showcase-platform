@@ -74,7 +74,7 @@ export default function ServicesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: idx * 0.1 }}
-              className="card p-7 flex flex-col justify-between group hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300"
+              className="card p-7 flex flex-col justify-between group card-hover-effect transition-all duration-300"
             >
               <div>
                 {/* Icon Box */}

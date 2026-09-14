@@ -34,7 +34,7 @@ export default function ProjectCard({ project, onSelect }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.35 }}
-      className="card group overflow-hidden flex flex-col hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/10 transition-all duration-300 cursor-pointer"
+      className="card group overflow-hidden flex flex-col card-hover-effect hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/10 cursor-pointer"
       onClick={() => onSelect(project)}
     >
       {/* Thumbnail Container */}
