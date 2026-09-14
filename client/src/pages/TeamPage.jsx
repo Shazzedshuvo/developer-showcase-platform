@@ -130,7 +130,7 @@ export default function TeamPage() {
               {[1, 2, 3].map((n) => (
                 <div
                   key={n}
-                  className="rounded-3xl p-6 bg-slate-100 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 animate-pulse h-96"
+                  className="rounded-3xl p-6 bg-slate-100 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 animate-pulse h-[480px]"
                 />
               ))}
             </div>
@@ -142,77 +142,109 @@ export default function TeamPage() {
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group relative rounded-3xl bg-white dark:bg-zinc-900/80 border border-slate-200 dark:border-zinc-800 p-6 shadow-lg shadow-slate-200/40 dark:shadow-none hover:shadow-2xl hover:border-indigo-500/40 dark:hover:border-indigo-500/40 transition-all duration-300 flex flex-col justify-between"
+                  transition={{ duration: 0.5, delay: index * 0.12 }}
+                  whileHover={{ y: -6 }}
+                  className="group relative rounded-3xl bg-white/95 dark:bg-zinc-900/80 border border-slate-200 dark:border-zinc-800/80 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-black/40 hover:shadow-2xl hover:shadow-indigo-500/10 hover:border-indigo-500/50 dark:hover:border-indigo-500/40 transition-all duration-300 flex flex-col justify-between"
                 >
+                  {/* Top Ambient Glow on Hover */}
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-indigo-500/20 via-purple-500/10 to-transparent rounded-full blur-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
                   <div>
-                    {/* Member Avatar Header */}
-                    <div className="flex items-center gap-4 mb-5">
-                      <div className="relative">
-                        <div className="w-20 h-20 rounded-2xl overflow-hidden bg-slate-100 dark:bg-zinc-800 border-2 border-indigo-500/30 group-hover:border-indigo-500 transition-colors shadow-md">
-                          {member.avatar ? (
-                            <img
-                              src={member.avatar}
-                              alt={member.name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center font-bold text-xl text-indigo-500 bg-indigo-500/10">
-                              {member.name.charAt(0)}
-                            </div>
-                          )}
+                    {/* Large High-Resolution Member Image */}
+                    <div className="relative w-full h-72 sm:h-80 overflow-hidden bg-slate-100 dark:bg-zinc-800">
+                      {member.avatar ? (
+                        <img
+                          src={member.avatar}
+                          alt={member.name}
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-indigo-950 via-purple-900 to-zinc-900 text-white p-6">
+                          <div className="w-20 h-20 rounded-2xl bg-white/10 flex items-center justify-center text-3xl font-extrabold mb-2">
+                            {member.name.charAt(0)}
+                          </div>
+                          <span className="text-sm font-semibold text-slate-300">{member.name}</span>
                         </div>
-                        <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white dark:border-zinc-900 flex items-center justify-center">
-                          <CheckCircle2 className="w-3 h-3 text-white" />
+                      )}
+
+                      {/* Smooth Bottom Gradient Vignette */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
+
+                      {/* Top Floating Glass Badges */}
+                      <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-black/60 text-white backdrop-blur-md border border-white/20 shadow-md">
+                          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                          <span>{member.role}</span>
+                        </span>
+
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/90 text-white backdrop-blur-md shadow-md">
+                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                          <span>Active</span>
                         </span>
                       </div>
 
-                      <div>
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      {/* Bottom Overlay Name & Experience */}
+                      <div className="absolute bottom-4 left-5 right-5 pointer-events-none">
+                        <h3 className="text-2xl font-extrabold text-white tracking-tight leading-tight drop-shadow-md">
                           {member.name}
                         </h3>
-                        <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 mt-0.5">
-                          {member.role}
-                        </p>
-                        {member.experience && (
-                          <span className="inline-block mt-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-zinc-700">
-                            {member.experience}
+                        <div className="flex items-center gap-2 mt-1">
+                          {member.experience && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-semibold bg-white/20 text-white backdrop-blur-md border border-white/20">
+                              <Award className="w-3 h-3 text-amber-300" />
+                              <span>{member.experience}</span>
+                            </span>
+                          )}
+                          <span className="text-[11px] font-medium text-slate-300 drop-shadow">
+                            Team {teamInfo.teamName || 'Dont Worry'}
                           </span>
-                        )}
+                        </div>
                       </div>
                     </div>
 
-                    {/* Bio */}
-                    {member.bio && (
-                      <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-5 line-clamp-3">
-                        {member.bio}
-                      </p>
-                    )}
+                    {/* Member Details Content */}
+                    <div className="p-6 space-y-4">
+                      {/* Bio */}
+                      {member.bio ? (
+                        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3">
+                          {member.bio}
+                        </p>
+                      ) : (
+                        <p className="text-xs text-slate-500 dark:text-slate-400 italic">
+                          Specialist in responsive design, high conversion architecture, and pixel-perfect implementation.
+                        </p>
+                      )}
 
-                    {/* Skills Tags */}
-                    {member.skills && member.skills.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mb-6">
-                        {member.skills.map((skill, sIdx) => (
-                          <span
-                            key={sIdx}
-                            className="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-slate-100 dark:bg-zinc-800/80 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-zinc-700/60"
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                      {/* Skills Tags */}
+                      {member.skills && member.skills.length > 0 && (
+                        <div>
+                          <div className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-2">
+                            Key Expertise
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {member.skills.map((skill, sIdx) => (
+                              <span
+                                key={sIdx}
+                                className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-zinc-700/80 hover:border-indigo-500/40 transition-colors"
+                              >
+                                {skill}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  {/* Social & Contact Bar */}
-                  <div className="pt-4 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-slate-400">
+                  {/* Social & Contact Action Bar */}
+                  <div className="px-6 py-4 bg-slate-50/80 dark:bg-zinc-950/60 border-t border-slate-100 dark:border-zinc-800/80 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
                       {member.socialLinks?.github && (
                         <a
                           href={member.socialLinks.github}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-1.5 rounded-lg hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                          className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-zinc-700 transition-all shadow-sm"
                           title="GitHub Profile"
                         >
                           <Github className="w-4 h-4" />
@@ -223,7 +255,7 @@ export default function TeamPage() {
                           href={member.socialLinks.linkedin}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-1.5 rounded-lg hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                          className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-800 transition-all shadow-sm"
                           title="LinkedIn Profile"
                         >
                           <Linkedin className="w-4 h-4" />
@@ -234,8 +266,8 @@ export default function TeamPage() {
                           href={member.socialLinks.portfolio}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-1.5 rounded-lg hover:text-emerald-500 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                          title="Portfolio / Live Work"
+                          className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:text-emerald-600 dark:hover:text-emerald-400 hover:border-emerald-300 dark:hover:border-emerald-800 transition-all shadow-sm"
+                          title="Portfolio / Works"
                         >
                           <Globe className="w-4 h-4" />
                         </a>
@@ -243,8 +275,8 @@ export default function TeamPage() {
                       {member.email && (
                         <a
                           href={`mailto:${member.email}`}
-                          className="p-1.5 rounded-lg hover:text-amber-500 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
-                          title="Send Email"
+                          className="p-2 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 hover:text-amber-500 hover:border-amber-300 dark:hover:border-amber-800 transition-all shadow-sm"
+                          title="Direct Email"
                         >
                           <Mail className="w-4 h-4" />
                         </a>
@@ -253,9 +285,9 @@ export default function TeamPage() {
 
                     <a
                       href="/#contact"
-                      className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-md shadow-indigo-600/20 transition-all"
                     >
-                      <span>Collaborate</span>
+                      <span>Hire Expert</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </a>
                   </div>
@@ -263,7 +295,7 @@ export default function TeamPage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 text-slate-500">
+            <div className="text-center py-16 text-slate-500">
               No team members listed yet. Add them in the Admin Dashboard!
             </div>
           )}
