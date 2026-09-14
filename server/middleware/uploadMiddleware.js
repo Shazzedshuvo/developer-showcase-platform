@@ -49,10 +49,20 @@ const uploadSingle = upload.single('image');
 // Single file field "logo"
 const uploadLogo = upload.single('logo');
 
+// Single file field "avatar"
+const uploadAvatar = upload.single('avatar');
+
 // Multiple files: "coverImage" (1) + "gallery" (up to 10)
 const uploadProjectImages = upload.fields([
   { name: 'coverImage', maxCount: 1 },
   { name: 'gallery', maxCount: 10 },
 ]);
 
-module.exports = { uploadSingle, uploadLogo, uploadProjectImages, uploadToCloudinary };
+module.exports = {
+  upload,
+  uploadSingle,
+  uploadLogo,
+  uploadAvatar,
+  uploadProjectImages,
+  uploadToCloudinary,
+};

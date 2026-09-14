@@ -1,9 +1,11 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import PublicPortfolio from './pages/PublicPortfolio';
+import TeamPage from './pages/TeamPage';
 import LoginPage from './pages/LoginPage';
 import AdminLayout from './components/admin/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
+import TeamManager from './pages/admin/TeamManager';
 import Categories from './pages/admin/Categories';
 import Projects from './pages/admin/Projects';
 import Reviews from './pages/admin/Reviews';
@@ -24,6 +26,9 @@ export default function App() {
       {/* Public Portfolio */}
       <Route path="/" element={<PublicPortfolio />} />
 
+      {/* Public Team Page */}
+      <Route path="/team" element={<TeamPage />} />
+
       {/* Admin Login */}
       <Route path="/admin/login" element={<LoginPage />} />
 
@@ -37,6 +42,7 @@ export default function App() {
         }
       >
         <Route index element={<Dashboard />} />
+        <Route path="team" element={<TeamManager />} />
         <Route path="categories" element={<Categories />} />
         <Route path="projects" element={<Projects />} />
         <Route path="reviews" element={<Reviews />} />

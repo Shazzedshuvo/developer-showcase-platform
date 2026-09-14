@@ -11,6 +11,7 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const settingRoutes = require('./routes/settingRoutes');
+const teamRoutes = require('./routes/teamRoutes');
 
 // Middleware
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
@@ -40,6 +41,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/settings', settingRoutes);
+app.use('/api/team', teamRoutes);
 
 // Root & Health check
 app.get('/', (req, res) =>

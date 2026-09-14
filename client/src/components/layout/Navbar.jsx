@@ -30,12 +30,12 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { label: 'Projects', href: '#projects' },
-    { label: 'Services', href: '#services' },
-    { label: 'Reviews', href: '#reviews' },
-    { label: 'Process', href: '#process' },
-    { label: 'FAQ', href: '#faq' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'Projects', href: '/#projects' },
+    { label: 'Services', href: '/#services' },
+    { label: 'Team', href: '/team' },
+    { label: 'Reviews', href: '/#reviews' },
+    { label: 'Process', href: '/#process' },
+    { label: 'Contact', href: '/#contact' },
   ];
 
   return (
@@ -51,7 +51,7 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Brand Logo & Name */}
-        <a href="#" className="flex items-center gap-3 group">
+        <Link to="/" className="flex items-center gap-3 group">
           {settings.logo ? (
             <div className="h-10 max-w-[160px] flex items-center">
               <img
@@ -73,11 +73,6 @@ export default function Navbar() {
               <span className="font-bold text-slate-900 dark:text-slate-100 tracking-tight text-base sm:text-lg group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                 {settings.siteName || 'Shazzed Shuvo'}
               </span>
-              {settings.teamName && (
-                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/20">
-                  Team: {settings.teamName}
-                </span>
-              )}
               {settings.availableForHire && (
                 <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -89,7 +84,7 @@ export default function Navbar() {
               {settings.tagline || 'Web Specialist & Web Developer'}
             </p>
           </div>
-        </a>
+        </Link>
 
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-1 bg-slate-100/90 dark:bg-zinc-900/70 backdrop-blur-md border border-slate-200 dark:border-zinc-800/80 px-4 py-1.5 rounded-full shadow-inner">

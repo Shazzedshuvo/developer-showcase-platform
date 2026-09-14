@@ -29,6 +29,16 @@ const settingsSchema = new mongoose.Schema(
       default: 'Dont Worry',
       trim: true,
     },
+    teamTagline: {
+      type: String,
+      default: 'Collaborative Excellence in Web Development & CMS Solutions',
+      trim: true,
+    },
+    teamDescription: {
+      type: String,
+      default: 'A multidisciplinary team of dedicated web engineers, designers, and CMS specialists delivering bespoke digital experiences with 100% precision.',
+      trim: true,
+    },
     email: {
       type: String,
       default: 'shazzedshuvo@gmail.com',

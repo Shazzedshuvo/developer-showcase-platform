@@ -7,6 +7,7 @@ import {
   FolderOpen,
   Star,
   Sliders,
+  Users,
   LogOut,
   Moon,
   Sun,
@@ -21,6 +22,7 @@ import toast from 'react-hot-toast';
 
 const navItems = [
   { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', end: true },
+  { to: '/admin/team', icon: Users, label: 'Team Manager' },
   { to: '/admin/projects', icon: FolderOpen, label: 'Projects Manager' },
   { to: '/admin/categories', icon: Tag, label: 'Platform Categories' },
   { to: '/admin/reviews', icon: Star, label: 'Client Reviews' },

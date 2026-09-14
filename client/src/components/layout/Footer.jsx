@@ -46,11 +46,6 @@ export default function Footer() {
                 <span className="font-bold text-slate-900 dark:text-white text-lg tracking-tight">
                   {settings.siteName || 'Shazzed Shuvo'}
                 </span>
-                {settings.teamName && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
-                    Team: {settings.teamName}
-                  </span>
-                )}
               </div>
             </div>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-sm leading-relaxed">
@@ -71,27 +66,32 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2.5 text-xs text-slate-600 dark:text-slate-400">
               <li>
-                <a href="#projects" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <a href="/#projects" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                   Featured Projects
                 </a>
               </li>
               <li>
-                <a href="#services" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <a href="/#services" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                   Services &amp; Pricing
                 </a>
               </li>
               <li>
-                <a href="#reviews" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <a href="/team" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-semibold text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+                  <span>Team ({settings.teamName || 'Dont Worry'})</span>
+                </a>
+              </li>
+              <li>
+                <a href="/#reviews" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                   Client Reviews (5.0 ⭐)
                 </a>
               </li>
               <li>
-                <a href="#process" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <a href="/#process" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                   Development Process
                 </a>
               </li>
               <li>
-                <a href="#faq" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <a href="/#faq" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                   FAQ
                 </a>
               </li>
