@@ -147,19 +147,28 @@ export default function TeamPage() {
                   className="group relative rounded-3xl bg-white dark:bg-[#0e1118] border border-slate-200 dark:border-zinc-800/80 overflow-hidden shadow-xl shadow-slate-200/60 dark:shadow-black/50 hover:shadow-2xl hover:shadow-indigo-500/15 hover:border-indigo-500/50 dark:hover:border-indigo-500/50 transition-all duration-300 flex flex-col justify-between"
                 >
                   <div>
-                    {/* Crystal Clear High-Definition Member Photo */}
-                    <div className="relative w-full h-80 sm:h-96 overflow-hidden bg-slate-100 dark:bg-zinc-800 p-3 pb-0">
-                      <div className="w-full h-full rounded-2xl overflow-hidden relative shadow-inner border border-slate-200/60 dark:border-zinc-700/60 bg-zinc-900">
+                    {/* Unified Studio Theme Background for Member Photo */}
+                    <div className="relative w-full h-80 sm:h-96 overflow-hidden p-3 pb-0">
+                      <div className="w-full h-full rounded-2xl overflow-hidden relative shadow-inner border border-slate-200/80 dark:border-indigo-500/20 bg-gradient-to-b from-[#0e1222] via-[#090b14] to-[#04060a]">
+                        {/* Cohesive Theme Blur Glow Studio Lighting (Identical across all members) */}
+                        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-52 h-52 bg-indigo-500/35 rounded-full blur-3xl" />
+                          <div className="absolute -bottom-8 -right-8 w-44 h-44 bg-purple-600/30 rounded-full blur-2xl" />
+                          <div className="absolute -top-8 -left-8 w-40 h-40 bg-pink-500/20 rounded-full blur-2xl" />
+                          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(99,102,241,0.2),transparent_75%)]" />
+                        </div>
+
+                        {/* Portrait Image */}
                         {member.avatar ? (
                           <img
                             src={member.avatar}
                             alt={member.name}
-                            className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500 ease-out"
+                            className="relative z-10 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
                             loading="lazy"
                           />
                         ) : (
-                          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-indigo-950 via-purple-900 to-zinc-900 text-white p-6">
-                            <div className="w-20 h-20 rounded-2xl bg-white/10 flex items-center justify-center text-3xl font-extrabold mb-2">
+                          <div className="relative z-10 w-full h-full flex flex-col items-center justify-center text-white p-6">
+                            <div className="w-20 h-20 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-3xl font-extrabold mb-2 text-indigo-300">
                               {member.name.charAt(0)}
                             </div>
                             <span className="text-sm font-semibold text-slate-300">{member.name}</span>
@@ -167,13 +176,13 @@ export default function TeamPage() {
                         )}
 
                         {/* Top Floating Glass Badge */}
-                        <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-black/70 text-white backdrop-blur-md border border-white/20 shadow-lg">
+                        <div className="absolute top-3 left-3 right-3 z-20 flex items-center justify-between pointer-events-none">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-black/60 text-white backdrop-blur-md border border-white/20 shadow-lg">
                             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                             <span>{member.role}</span>
                           </span>
 
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500 text-white shadow-lg">
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/90 text-white backdrop-blur-md shadow-lg border border-emerald-400/30">
                             <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                             <span>Active</span>
                           </span>
