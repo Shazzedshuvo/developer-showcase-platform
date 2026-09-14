@@ -27,7 +27,7 @@ const seedTeam = async () => {
       {
         name: 'Shazzed Shuvo',
         role: 'Founder & Lead CMS Specialist',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=900&auto=format&fit=crop&q=85',
+        avatar: '/images/team/shazzed-shuvo.jpg',
         bio: '5+ years specializing in Wix Studio, Squarespace, Webflow, and Full-Stack JavaScript architectures with 100+ delivered projects.',
         skills: ['Wix Studio', 'Squarespace', 'Webflow', 'React.js', 'Tailwind CSS', 'Node.js'],
         experience: '5+ Years',
@@ -43,7 +43,7 @@ const seedTeam = async () => {
       {
         name: 'Sarah Lin',
         role: 'Senior UI/UX Designer & Prototyper',
-        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=900&auto=format&fit=crop&q=85',
+        avatar: '/images/team/sarah-lin.jpg',
         bio: 'Designing responsive design systems, high-converting checkout flows, and clean animations across modern web platforms.',
         skills: ['Figma', 'UI/UX Design', 'Design Systems', 'Responsive Web', 'Micro-Interactions'],
         experience: '4+ Years',
@@ -57,7 +57,7 @@ const seedTeam = async () => {
       {
         name: 'Alex Rivera',
         role: 'Frontend & Animations Engineer',
-        avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=900&auto=format&fit=crop&q=85',
+        avatar: '/images/team/alex-rivera.jpg',
         bio: 'Mastering Framer Motion, HTML5 Canvas 3D particle animations, and speed optimization for 100/100 Google Lighthouse scores.',
         skills: ['Three.js', 'Framer Motion', 'Canvas 3D', 'Next.js', 'SEO Optimization'],
         experience: '4+ Years',
@@ -72,7 +72,7 @@ const seedTeam = async () => {
 
     await TeamMember.deleteMany({});
     await TeamMember.insertMany(membersData);
-    console.log('Updated team members with high-res images in Atlas DB.');
+    console.log('Updated team members with custom AI generated matching portraits in Atlas DB.');
 
     process.exit(0);
   } catch (error) {
