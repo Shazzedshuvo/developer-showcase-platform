@@ -4,6 +4,7 @@ const { protect } = require('../middleware/authMiddleware');
 const {
   getOrCreateSession,
   getAdminConversations,
+  getClientLeads,
   getConversationMessages,
   markMessagesRead,
   deleteConversation,
@@ -15,6 +16,7 @@ router.put('/read/:conversationId', markMessagesRead);
 
 // Admin chat endpoints
 router.get('/conversations', protect, getAdminConversations);
+router.get('/leads', protect, getClientLeads);
 router.get('/messages/:conversationId', protect, getConversationMessages);
 router.delete('/conversations/:conversationId', protect, deleteConversation);
 

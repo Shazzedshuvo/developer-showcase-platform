@@ -80,9 +80,38 @@ const deleteConversation = asyncHandler(async (req, res) => {
   res.json({ success: true, message: 'Conversation deleted' });
 });
 
+/**
+ * @route   GET /api/chat/leads
+ * @access  Admin
+ */
+const getClientLeads = asyncHandler(async (req, res) => {
+  const conversations = await Conversation.find().sort({ lastMessageAt: -1, updatedAt: -1 }).lean();
+
+  // Aggregate message count for each conversation
+  const convIds = conversations.map((c) => c._id);
+  let countMap = {};
+  if (convIds.length > 0) {
+    const counts = await Message.aggregate([
+      { $match: { conversationId: { $in: convIds } } },
+      { $group: { _id: '$conversationId', count: { $sum: 1 } } },
+    ]);
+    counts.forEach((item) => {
+      countMap[item._id.toString()] = item.count;
+    });
+  }
+
+  const leads = conversations.map((c) => ({
+    ...c,
+    messageCount: countMap[c._id.toString()] || 0,
+  }));
+
+  res.json(leads);
+});
+
 module.exports = {
   getOrCreateSession,
   getAdminConversations,
+  getClientLeads,
   getConversationMessages,
   markMessagesRead,
   deleteConversation,

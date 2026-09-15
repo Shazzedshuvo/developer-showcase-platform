@@ -14,6 +14,7 @@ import {
   Minus,
   Edit3,
   AlertCircle,
+  CheckCircle2,
 } from 'lucide-react';
 import { socket, getVisitorSessionId, getVisitorProfile, setVisitorProfile } from '../../socket';
 import api from '../../api/axios';
@@ -194,6 +195,16 @@ export default function LiveChatWidget() {
     setProfile(updated);
     setVisitorProfile(updated);
     setShowProfileSetup(false);
+
+    // Emit visitor registration to server so admin sees client name & email in chat box
+    if (!socket.connected) {
+      socket.connect();
+    }
+    socket.emit('visitor_register', {
+      sessionId,
+      visitorName: name,
+      visitorEmail: email,
+    });
   };
 
   // Send message with mandatory validation check
@@ -480,6 +491,23 @@ export default function LiveChatWidget() {
 
               {/* Message Bubbles */}
               {messages.map((msg, index) => {
+                if (msg.text?.startsWith('📋 New Client Information')) {
+                  return (
+                    <div
+                      key={msg._id || index}
+                      className="my-1.5 p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/40 text-center shadow-xs"
+                    >
+                      <p className="text-[11px] font-bold text-indigo-700 dark:text-indigo-300 flex items-center justify-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                        <span>Connected as {profile?.name || conversation?.visitorName || 'Client'}</span>
+                      </p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+                        {profile?.email || conversation?.visitorEmail}
+                      </p>
+                    </div>
+                  );
+                }
+
                 const isVisitor = msg.sender === 'visitor';
                 return (
                   <div

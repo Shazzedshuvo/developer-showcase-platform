@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import AdminLayout from './components/admin/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
 import AdminChat from './pages/admin/AdminChat';
+import ClientLeads from './pages/admin/ClientLeads';
 import TeamManager from './pages/admin/TeamManager';
 import Categories from './pages/admin/Categories';
 import Projects from './pages/admin/Projects';
@@ -49,6 +50,7 @@ export default function App() {
         >
           <Route index element={<Dashboard />} />
           <Route path="chat" element={<AdminChat />} />
+          <Route path="leads" element={<ClientLeads />} />
           <Route path="team" element={<TeamManager />} />
           <Route path="categories" element={<Categories />} />
           <Route path="projects" element={<Projects />} />

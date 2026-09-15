@@ -30,6 +30,56 @@ const setupSocket = (httpServer) => {
         }
       });
 
+      // Visitor registers or updates their contact profile (Name & Email)
+      socket.on('visitor_register', async ({ sessionId, visitorName, visitorEmail }) => {
+        try {
+          if (!sessionId || !visitorName) return;
+
+          let conversation = await Conversation.findOne({ sessionId });
+          if (!conversation) {
+            conversation = await Conversation.create({
+              sessionId,
+              visitorName: visitorName.trim(),
+              visitorEmail: visitorEmail ? visitorEmail.trim() : '',
+              lastMessage: `Client Registered: ${visitorName.trim()}`,
+              lastMessageAt: new Date(),
+            });
+          } else {
+            conversation.visitorName = visitorName.trim();
+            if (visitorEmail) conversation.visitorEmail = visitorEmail.trim();
+            await conversation.save();
+          }
+
+          // If this is the start of the conversation, emit an intro lead card immediately
+          const count = await Message.countDocuments({ conversationId: conversation._id });
+          if (count === 0 && (visitorName || visitorEmail)) {
+            const introMsg = await Message.create({
+              conversationId: conversation._id,
+              sessionId,
+              sender: 'visitor',
+              text: `📋 New Client Information:\n👤 Name: ${visitorName.trim()}\n📧 Email: ${visitorEmail ? visitorEmail.trim() : 'N/A'}`,
+              isRead: false,
+            });
+
+            conversation.lastMessage = `👤 ${visitorName.trim()} (${visitorEmail ? visitorEmail.trim() : ''})`;
+            conversation.lastMessageAt = new Date();
+            conversation.unreadByAdmin += 1;
+            await conversation.save();
+
+            io.to(sessionId).emit('receive_message', { message: introMsg, conversation });
+            io.of('/api').to(sessionId).emit('receive_message', { message: introMsg, conversation });
+
+            io.to('admin_inbox').emit('inbox_updated', { conversation, message: introMsg });
+            io.of('/api').to('admin_inbox').emit('inbox_updated', { conversation, message: introMsg });
+          } else {
+            io.to('admin_inbox').emit('inbox_updated', { conversation });
+            io.of('/api').to('admin_inbox').emit('inbox_updated', { conversation });
+          }
+        } catch (err) {
+          console.error('Socket visitor_register error:', err);
+        }
+      });
+
       // Handle sending a message in real-time
       socket.on('send_message', async ({ sessionId, sender, text, visitorName, visitorEmail }) => {
         try {
@@ -42,6 +92,29 @@ const setupSocket = (httpServer) => {
               visitorName: visitorName || `Visitor #${sessionId.slice(-4)}`,
               visitorEmail: visitorEmail || '',
             });
+          } else {
+            if (visitorName) conversation.visitorName = visitorName.trim();
+            if (visitorEmail) conversation.visitorEmail = visitorEmail.trim();
+          }
+
+          // If visitor is sending and conversation has 0 messages, ensure client info arrives first
+          if (sender === 'visitor') {
+            const priorCount = await Message.countDocuments({ conversationId: conversation._id });
+            if (priorCount === 0 && (conversation.visitorName || conversation.visitorEmail)) {
+              const introMsg = await Message.create({
+                conversationId: conversation._id,
+                sessionId,
+                sender: 'visitor',
+                text: `📋 New Client Information:\n👤 Name: ${conversation.visitorName}\n📧 Email: ${conversation.visitorEmail || 'N/A'}`,
+                isRead: false,
+              });
+
+              io.to(sessionId).emit('receive_message', { message: introMsg, conversation });
+              io.of('/api').to(sessionId).emit('receive_message', { message: introMsg, conversation });
+
+              io.to('admin_inbox').emit('inbox_updated', { conversation, message: introMsg });
+              io.of('/api').to('admin_inbox').emit('inbox_updated', { conversation, message: introMsg });
+            }
           }
 
           // Create the message in database
@@ -58,8 +131,6 @@ const setupSocket = (httpServer) => {
           conversation.lastMessageAt = new Date();
           if (sender === 'visitor') {
             conversation.unreadByAdmin += 1;
-            if (visitorName) conversation.visitorName = visitorName;
-            if (visitorEmail) conversation.visitorEmail = visitorEmail;
           } else if (sender === 'admin') {
             conversation.unreadByVisitor += 1;
           }

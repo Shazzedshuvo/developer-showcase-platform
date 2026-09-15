@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import {
   MessageSquare,
   Search,
@@ -13,6 +14,9 @@ import {
   Shield,
   Circle,
   RefreshCw,
+  Copy,
+  ExternalLink,
+  CheckCircle2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { socket } from '../../socket';
@@ -241,13 +245,23 @@ export default function AdminChat() {
           </p>
         </div>
 
-        <button
-          onClick={fetchConversations}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-slate-300 text-xs font-semibold self-start sm:self-center transition-all cursor-pointer"
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span>Refresh Inbox</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-center">
+          <Link
+            to="/admin/leads"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition-all cursor-pointer"
+          >
+            <Mail className="w-3.5 h-3.5" />
+            <span>All Client Leads &amp; Emails</span>
+          </Link>
+
+          <button
+            onClick={fetchConversations}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-slate-300 text-xs font-semibold transition-all cursor-pointer"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>Refresh</span>
+          </button>
+        </div>
       </div>
 
       {/* Main Split-Screen Inbox */}
@@ -317,8 +331,9 @@ export default function AdminChat() {
                         </div>
 
                         {conv.visitorEmail && (
-                          <p className="text-[10px] text-slate-400 truncate mb-1">
-                            {conv.visitorEmail}
+                          <p className="text-[10px] text-indigo-400 dark:text-indigo-400 font-medium truncate mb-1 flex items-center gap-1">
+                            <Mail className="w-2.5 h-2.5 shrink-0 text-indigo-400" />
+                            <span className="truncate">{conv.visitorEmail}</span>
                           </p>
                         )}
 
@@ -384,13 +399,52 @@ export default function AdminChat() {
                   </div>
                 </div>
 
-                <button
-                  onClick={(e) => handleDeleteConversation(activeConv._id, e)}
-                  className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  <span>Delete</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  {activeConv.visitorEmail && (
+                    <div className="flex items-center gap-1.5">
+                      <a
+                        href={`mailto:${activeConv.visitorEmail}?subject=Regarding%20your%20inquiry%20on%20our%20website`}
+                        className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-sm shadow-indigo-600/20 transition-all cursor-pointer flex items-center gap-1.5"
+                        title="Send Direct Email"
+                      >
+                        <Mail className="w-3.5 h-3.5" />
+                        <span>Email</span>
+                      </a>
+
+                      <a
+                        href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+                          activeConv.visitorEmail
+                        )}&su=Regarding%20your%20inquiry%20on%20our%20website`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-slate-300 border border-zinc-700 text-xs font-semibold transition-colors cursor-pointer"
+                        title="Open in Gmail"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5 text-rose-400" />
+                        <span>Gmail</span>
+                      </a>
+
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(activeConv.visitorEmail);
+                          toast.success(`Copied: ${activeConv.visitorEmail}`);
+                        }}
+                        className="p-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-slate-300 border border-zinc-700 text-xs transition-colors cursor-pointer"
+                        title="Copy Email Address"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={(e) => handleDeleteConversation(activeConv._id, e)}
+                    className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Delete</span>
+                  </button>
+                </div>
               </div>
 
               {/* Messages Stream */}
@@ -401,6 +455,78 @@ export default function AdminChat() {
                   </div>
                 ) : (
                   messages.map((msg, index) => {
+                    // Check if this is the introductory client contact verification message
+                    if (msg.text?.startsWith('📋 New Client Information')) {
+                      return (
+                        <div
+                          key={msg._id || index}
+                          className="my-3 p-4 rounded-2xl bg-gradient-to-r from-indigo-950/60 via-purple-950/40 to-zinc-900 border border-indigo-500/40 shadow-lg shadow-indigo-950/40"
+                        >
+                          <div className="flex items-center justify-between gap-2 border-b border-indigo-500/20 pb-2 mb-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-6 h-6 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs">
+                                <User className="w-3.5 h-3.5" />
+                              </div>
+                              <span className="text-xs font-bold text-white">Client Verified Lead Info</span>
+                            </div>
+                            <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                              <CheckCircle2 className="w-2.5 h-2.5" />
+                              <span>VERIFIED</span>
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs mb-3">
+                            <div className="p-2.5 rounded-xl bg-zinc-900/90 border border-zinc-800">
+                              <p className="text-[10px] text-slate-400 font-medium">Client Name</p>
+                              <p className="font-bold text-white mt-0.5 text-sm">{activeConv.visitorName || 'Visitor'}</p>
+                            </div>
+
+                            <div className="p-2.5 rounded-xl bg-zinc-900/90 border border-zinc-800">
+                              <p className="text-[10px] text-slate-400 font-medium">Email Address</p>
+                              <p className="font-bold text-indigo-400 mt-0.5 text-sm truncate">
+                                {activeConv.visitorEmail || 'Not provided'}
+                              </p>
+                            </div>
+                          </div>
+
+                          {activeConv.visitorEmail && (
+                            <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-zinc-800/80">
+                              <a
+                                href={`mailto:${activeConv.visitorEmail}?subject=Regarding%20your%20inquiry%20on%20our%20website`}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/30 transition-all cursor-pointer"
+                              >
+                                <Mail className="w-3.5 h-3.5" />
+                                <span>Send Direct Email</span>
+                              </a>
+
+                              <a
+                                href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+                                  activeConv.visitorEmail
+                                )}&su=Regarding%20your%20inquiry%20on%20our%20website`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-slate-200 border border-zinc-700 text-xs font-semibold transition-colors cursor-pointer"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5 text-rose-400" />
+                                <span>Open in Gmail</span>
+                              </a>
+
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(activeConv.visitorEmail);
+                                  toast.success(`Copied: ${activeConv.visitorEmail}`);
+                                }}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-slate-300 border border-zinc-700 text-xs font-semibold transition-colors cursor-pointer"
+                              >
+                                <Copy className="w-3.5 h-3.5" />
+                                <span>Copy Email</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+
                     const isAdmin = msg.sender === 'admin';
                     return (
                       <div
