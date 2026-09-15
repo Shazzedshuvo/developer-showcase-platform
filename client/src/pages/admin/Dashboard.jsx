@@ -134,23 +134,23 @@ export default function Dashboard() {
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Top Banner Greeting */}
-      <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-indigo-900/40 via-purple-900/20 to-zinc-950 border border-indigo-500/20 shadow-xl">
+      <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-indigo-100/80 via-purple-50/60 to-white dark:from-indigo-900/40 dark:via-purple-900/20 dark:to-zinc-950 border border-indigo-200 dark:border-indigo-500/20 shadow-xl">
         <div className="absolute -right-10 -top-10 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 mb-3">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 mb-3">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
               <span>Admin Analytics &amp; Control Center</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex flex-wrap items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight flex flex-wrap items-center gap-3">
               <span>Welcome back, {settings?.siteName || 'Shazzed'} 👋</span>
               {settings?.teamName && (
-                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30">
                   Team: {settings.teamName}
                 </span>
               )}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 max-w-xl mt-1 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-xl mt-1 leading-relaxed">
               Your portfolio is fully synchronized with MongoDB Atlas &amp; Cloudinary CDN. Manage 78+ client projects, live categories, and brand settings in real-time.
             </p>
           </div>
@@ -167,9 +167,9 @@ export default function Dashboard() {
               href="/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700/80 text-slate-300 hover:text-white font-semibold text-xs transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 dark:bg-zinc-900/90 dark:hover:bg-zinc-800 dark:border-zinc-700/80 dark:text-slate-300 dark:hover:text-white font-semibold text-xs transition-all shadow-sm"
             >
-              <Globe className="w-4 h-4 text-emerald-400" />
+              <Globe className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
               <span>Preview Portfolio</span>
             </a>
           </div>
@@ -181,18 +181,18 @@ export default function Dashboard() {
         {/* Total Projects */}
         <div className="card p-5 flex flex-col justify-between hover:border-indigo-500/40 transition-all group">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Total Live Projects
             </span>
-            <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <div className="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center group-hover:scale-110 transition-transform">
               <FolderOpen className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-4">
-            <div className="text-3xl font-extrabold text-white tracking-tight">
+            <div className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               {loading ? '...' : projects.length}
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-emerald-400 font-semibold mt-1">
+            <div className="flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1">
               <TrendingUp className="w-3.5 h-3.5" />
               <span>100% active on Atlas DB</span>
             </div>
@@ -202,18 +202,18 @@ export default function Dashboard() {
         {/* 1-Year Priority Recent Projects */}
         <div className="card p-5 flex flex-col justify-between hover:border-rose-500/40 transition-all group">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               🔥 1-Yr Recent Work
             </span>
-            <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <div className="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 dark:text-rose-400 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Flame className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-4">
-            <div className="text-3xl font-extrabold text-white tracking-tight">
+            <div className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               {loading ? '...' : recentProjectsCount}
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-rose-400 font-semibold mt-1">
+            <div className="flex items-center gap-1.5 text-[11px] text-rose-600 dark:text-rose-400 font-semibold mt-1">
               <Clock className="w-3.5 h-3.5" />
               <span>365-day Top Showcase Priority</span>
             </div>
@@ -223,19 +223,19 @@ export default function Dashboard() {
         {/* Categories */}
         <div className="card p-5 flex flex-col justify-between hover:border-emerald-500/40 transition-all group">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Platforms Supported
             </span>
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Tag className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-4">
-            <div className="text-3xl font-extrabold text-white tracking-tight">
+            <div className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               {loading ? '...' : categories.length}
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium mt-1">
-              <Layers className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-1">
+              <Layers className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
               <span>Wix, Squarespace, Webflow &amp; more</span>
             </div>
           </div>
@@ -244,18 +244,18 @@ export default function Dashboard() {
         {/* Client Reviews */}
         <div className="card p-5 flex flex-col justify-between hover:border-amber-500/40 transition-all group">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               Client Feedback
             </span>
-            <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 dark:text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Star className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-4">
-            <div className="text-3xl font-extrabold text-white tracking-tight">
+            <div className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
               {loading ? '...' : reviews.length}
             </div>
-            <div className="flex items-center gap-1.5 text-[11px] text-amber-400 font-semibold mt-1">
+            <div className="flex items-center gap-1.5 text-[11px] text-amber-600 dark:text-amber-400 font-semibold mt-1">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>5.0 / 5.0 Rating Score</span>
             </div>
@@ -270,14 +270,14 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <div className="flex items-center gap-2">
-                <PieIcon className="w-4 h-4 text-indigo-400" />
-                <h3 className="font-bold text-slate-100 text-sm">Platform Distribution</h3>
+                <PieIcon className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+                <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm">Platform Distribution</h3>
               </div>
-              <p className="text-[11px] text-slate-400 mt-0.5">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 Share of projects by CMS &amp; stack
               </p>
             </div>
-            <span className="text-xs font-bold px-2 py-0.5 rounded bg-zinc-800 text-slate-300">
+            <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-200 dark:bg-zinc-800 text-slate-700 dark:text-slate-300">
               {projects.length} Total
             </span>
           </div>
@@ -342,18 +342,18 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <div className="flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-emerald-400" />
-                <h3 className="font-bold text-slate-100 text-sm">Platform Projects Breakdown</h3>
+                <BarChart3 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+                <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm">Platform Projects Breakdown</h3>
               </div>
-              <p className="text-[11px] text-slate-400 mt-0.5">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 Distribution of Standard, Featured, and 1-Year Recent work
               </p>
             </div>
             <div className="flex items-center gap-3 text-[11px]">
-              <span className="flex items-center gap-1 text-slate-400">
+              <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
                 <span className="w-2 h-2 rounded-full bg-indigo-500" /> Standard
               </span>
-              <span className="flex items-center gap-1 text-rose-400">
+              <span className="flex items-center gap-1 text-rose-500 dark:text-rose-400">
                 <span className="w-2 h-2 rounded-full bg-rose-500" /> 🔥 Recent
               </span>
             </div>
@@ -388,12 +388,12 @@ export default function Dashboard() {
           </div>
 
           {/* Quick Stats Footnote */}
-          <div className="pt-4 border-t border-zinc-800/80 flex items-center justify-between text-xs text-slate-400">
+          <div className="pt-4 border-t border-slate-200 dark:border-zinc-800/80 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
             <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
               <span>{featuredProjectsCount} projects featured on landing page</span>
             </span>
-            <Link to="/admin/projects" className="text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1">
+            <Link to="/admin/projects" className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 font-semibold flex items-center gap-1">
               <span>Manage Projects</span>
               <ArrowRight className="w-3 h-3" />
             </Link>
@@ -406,15 +406,15 @@ export default function Dashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
           <div>
             <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4 text-purple-400" />
-              <h3 className="font-bold text-slate-100 text-sm">Portfolio Growth &amp; Engagement Activity</h3>
+              <Activity className="w-4 h-4 text-purple-500 dark:text-purple-400" />
+              <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm">Portfolio Growth &amp; Engagement Activity</h3>
             </div>
-            <p className="text-[11px] text-slate-400 mt-0.5">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
               Cumulative project releases and client engagement velocity
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
               100% On-Time Delivery
             </span>
           </div>
@@ -461,12 +461,12 @@ export default function Dashboard() {
         <div className="lg:col-span-8 card p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="font-bold text-slate-100 text-sm">Recent Projects Feed</h3>
-              <p className="text-[11px] text-slate-400 mt-0.5">Latest websites stored in your portfolio</p>
+              <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm">Recent Projects Feed</h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Latest websites stored in your portfolio</p>
             </div>
             <Link
               to="/admin/projects"
-              className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+              className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 flex items-center gap-1"
             >
               <span>View All ({projects.length})</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -477,27 +477,27 @@ export default function Dashboard() {
             {latestProjects.map((p) => (
               <div
                 key={p._id}
-                className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 flex items-center justify-between gap-4 transition-all"
+                className="p-3 rounded-xl bg-slate-50/80 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800/80 hover:border-indigo-400 dark:hover:border-zinc-700 flex items-center justify-between gap-4 transition-all"
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <img
                     src={p.coverImage || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=150&q=80'}
                     alt={p.title}
-                    className="w-12 h-9 rounded-lg object-cover bg-zinc-950 shrink-0"
+                    className="w-12 h-9 rounded-lg object-cover bg-slate-200 dark:bg-zinc-950 shrink-0"
                   />
                   <div className="min-w-0">
-                    <h4 className="font-semibold text-slate-200 text-xs truncate">{p.title}</h4>
+                    <h4 className="font-semibold text-slate-900 dark:text-slate-200 text-xs truncate">{p.title}</h4>
                     <div className="flex items-center gap-2 mt-0.5">
                       {p.category && (
-                        <span className="text-[10px] text-slate-400">{p.category.name}</span>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400">{p.category.name}</span>
                       )}
                       {p.isRecentActive && (
-                        <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-rose-500/15 text-rose-600 dark:text-rose-300 border border-rose-500/25">
                           🔥 Recent
                         </span>
                       )}
                       {p.isFeatured && (
-                        <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/25">
                           Featured
                         </span>
                       )}
@@ -511,7 +511,7 @@ export default function Dashboard() {
                       href={p.demoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-slate-300 hover:text-white transition-all"
+                      className="p-2 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all"
                       title="Open Live Site"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -526,83 +526,83 @@ export default function Dashboard() {
         {/* Quick Shortcuts Hub */}
         <div className="lg:col-span-4 space-y-4">
           <div className="card p-6 space-y-4">
-            <h3 className="font-bold text-slate-100 text-sm">Quick Management</h3>
+            <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm">Quick Management</h3>
             <div className="space-y-2">
               <Link
                 to="/admin/projects"
-                className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/60 hover:bg-zinc-800 border border-zinc-800 text-xs font-semibold text-slate-200 transition-all group"
+                className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 dark:bg-zinc-900/60 dark:hover:bg-zinc-800 dark:border-zinc-800 text-xs font-semibold text-slate-800 dark:text-slate-200 transition-all group"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
                     <FolderOpen className="w-3.5 h-3.5" />
                   </div>
                   <span>Add / Edit Projects</span>
                 </div>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all" />
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               <Link
                 to="/admin/categories"
-                className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/60 hover:bg-zinc-800 border border-zinc-800 text-xs font-semibold text-slate-200 transition-all group"
+                className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 dark:bg-zinc-900/60 dark:hover:bg-zinc-800 dark:border-zinc-800 text-xs font-semibold text-slate-800 dark:text-slate-200 transition-all group"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                     <Tag className="w-3.5 h-3.5" />
                   </div>
                   <span>Manage Categories</span>
                 </div>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all" />
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               <Link
                 to="/admin/reviews"
-                className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/60 hover:bg-zinc-800 border border-zinc-800 text-xs font-semibold text-slate-200 transition-all group"
+                className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 dark:bg-zinc-900/60 dark:hover:bg-zinc-800 dark:border-zinc-800 text-xs font-semibold text-slate-800 dark:text-slate-200 transition-all group"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
                     <Star className="w-3.5 h-3.5" />
                   </div>
                   <span>Upload Client Reviews</span>
                 </div>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all" />
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               <Link
                 to="/admin/settings"
-                className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/60 hover:bg-zinc-800 border border-zinc-800 text-xs font-semibold text-slate-200 transition-all group"
+                className="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 dark:bg-zinc-900/60 dark:hover:bg-zinc-800 dark:border-zinc-800 text-xs font-semibold text-slate-800 dark:text-slate-200 transition-all group"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
                     <Sparkles className="w-3.5 h-3.5" />
                   </div>
                   <span>Brand Logo &amp; Settings</span>
                 </div>
-                <ArrowRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all" />
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300 group-hover:translate-x-0.5 transition-all" />
               </Link>
             </div>
           </div>
 
           {/* System Status Card */}
-          <div className="card p-5 bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-950 border border-zinc-800">
+          <div className="card p-5 bg-gradient-to-br from-slate-100 via-slate-50 to-slate-100 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-950 border border-slate-200 dark:border-zinc-800">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold text-slate-300">System Health</span>
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs font-bold text-slate-800 dark:text-slate-300">System Health</span>
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Operational
               </span>
             </div>
-            <div className="space-y-2 text-[11px] text-slate-400">
+            <div className="space-y-2 text-[11px] text-slate-600 dark:text-slate-400">
               <div className="flex justify-between">
                 <span>Database:</span>
-                <span className="text-slate-200 font-semibold">MongoDB Atlas Cloud</span>
+                <span className="text-slate-900 dark:text-slate-200 font-semibold">MongoDB Atlas Cloud</span>
               </div>
               <div className="flex justify-between">
                 <span>Media Storage:</span>
-                <span className="text-slate-200 font-semibold">Cloudinary CDN</span>
+                <span className="text-slate-900 dark:text-slate-200 font-semibold">Cloudinary CDN</span>
               </div>
               <div className="flex justify-between">
                 <span>Contact Gateway:</span>
-                <span className="text-slate-200 font-semibold">EmailJS (shazzedshuvo@gmail.com)</span>
+                <span className="text-slate-900 dark:text-slate-200 font-semibold">EmailJS (shazzedshuvo@gmail.com)</span>
               </div>
             </div>
           </div>

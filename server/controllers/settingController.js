@@ -31,19 +31,57 @@ const updateSettings = asyncHandler(async (req, res) => {
     settings = new Settings();
   }
 
-  const { siteName, tagline, teamName, email, availableForHire } = req.body;
+  const {
+    siteName,
+    logoName,
+    siteTitle,
+    tagline,
+    teamName,
+    email,
+    availableForHire,
+    removeLogo,
+    removeFavicon,
+  } = req.body;
 
-  if (siteName) settings.siteName = siteName;
-  if (tagline !== undefined) settings.tagline = tagline;
-  if (teamName !== undefined) settings.teamName = teamName;
-  if (email) settings.email = email;
+  if (siteName !== undefined) settings.siteName = siteName.trim();
+  if (logoName !== undefined) settings.logoName = logoName.trim();
+  if (siteTitle !== undefined) settings.siteTitle = siteTitle.trim();
+  if (tagline !== undefined) settings.tagline = tagline.trim();
+  if (teamName !== undefined) settings.teamName = teamName.trim();
+  if (email !== undefined) settings.email = email.trim();
   if (availableForHire !== undefined) {
     settings.availableForHire = availableForHire === 'true' || availableForHire === true;
   }
 
-  // Check if new logo file is uploaded
-  if (req.file) {
-    // Delete old logo from Cloudinary if exists
+  // Handle remove logo
+  if (removeLogo === 'true' || removeLogo === true) {
+    if (settings.logoPublicId) {
+      try {
+        await cloudinary.uploader.destroy(settings.logoPublicId);
+      } catch (err) {
+        console.error('Logo deletion error:', err);
+      }
+    }
+    settings.logo = '';
+    settings.logoPublicId = '';
+  }
+
+  // Handle remove favicon
+  if (removeFavicon === 'true' || removeFavicon === true) {
+    if (settings.faviconPublicId) {
+      try {
+        await cloudinary.uploader.destroy(settings.faviconPublicId);
+      } catch (err) {
+        console.error('Favicon deletion error:', err);
+      }
+    }
+    settings.favicon = '';
+    settings.faviconPublicId = '';
+  }
+
+  // Check if new logo file is uploaded (via req.files['logo'] or req.file)
+  const logoFile = req.files?.logo?.[0] || req.file;
+  if (logoFile) {
     if (settings.logoPublicId) {
       try {
         await cloudinary.uploader.destroy(settings.logoPublicId);
@@ -53,11 +91,30 @@ const updateSettings = asyncHandler(async (req, res) => {
     }
 
     const uploadResult = await uploadToCloudinary(
-      req.file.buffer,
+      logoFile.buffer,
       'portfolio/branding'
     );
     settings.logo = uploadResult.secure_url;
     settings.logoPublicId = uploadResult.public_id;
+  }
+
+  // Check if new favicon file is uploaded
+  const faviconFile = req.files?.favicon?.[0];
+  if (faviconFile) {
+    if (settings.faviconPublicId) {
+      try {
+        await cloudinary.uploader.destroy(settings.faviconPublicId);
+      } catch (err) {
+        console.error('Old favicon deletion error:', err);
+      }
+    }
+
+    const uploadResult = await uploadToCloudinary(
+      faviconFile.buffer,
+      'portfolio/branding'
+    );
+    settings.favicon = uploadResult.secure_url;
+    settings.faviconPublicId = uploadResult.public_id;
   }
 
   const updated = await settings.save();

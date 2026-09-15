@@ -7,11 +7,20 @@ const cloudinary = require('../config/cloudinary');
 const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-  if (allowedTypes.includes(file.mimetype)) {
+  const allowedTypes = [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
+    'image/x-icon',
+    'image/vnd.microsoft.icon',
+    'image/svg+xml',
+    'image/ico',
+  ];
+  if (allowedTypes.includes(file.mimetype) || file.originalname.match(/\.(ico|svg|png|jpe?g|webp)$/i)) {
     cb(null, true);
   } else {
-    cb(new Error('Only JPEG, PNG, and WebP images are allowed'), false);
+    cb(new Error('Only JPEG, PNG, WebP, SVG, and ICO images are allowed'), false);
   }
 };
 
@@ -33,7 +42,7 @@ const upload = multer({
 const uploadToCloudinary = (buffer, folder = 'portfolio') => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
-      { folder, resource_type: 'image' },
+      { folder, resource_type: 'auto' },
       (error, result) => {
         if (error) return reject(error);
         resolve(result);
@@ -49,6 +58,12 @@ const uploadSingle = upload.single('image');
 // Single file field "logo"
 const uploadLogo = upload.single('logo');
 
+// Brand Assets: "logo" (1) + "favicon" (1)
+const uploadBrandAssets = upload.fields([
+  { name: 'logo', maxCount: 1 },
+  { name: 'favicon', maxCount: 1 },
+]);
+
 // Single file field "avatar"
 const uploadAvatar = upload.single('avatar');
 
@@ -62,6 +77,7 @@ module.exports = {
   upload,
   uploadSingle,
   uploadLogo,
+  uploadBrandAssets,
   uploadAvatar,
   uploadProjectImages,
   uploadToCloudinary,

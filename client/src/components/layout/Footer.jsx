@@ -1,22 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUp, Heart } from 'lucide-react';
-import api from '../../api/axios';
+import { useSettings } from '../../context/SettingsContext';
 
 export default function Footer() {
-  const [settings, setSettings] = useState({
-    siteName: 'Shazzed Shuvo',
-    tagline: 'Web Specialist & Web Developer',
-    teamName: 'Dont Worry',
-    logo: '',
-  });
-
-  useEffect(() => {
-    api
-      .get('/settings')
-      .then(({ data }) => setSettings(data))
-      .catch(console.error);
-  }, []);
+  const { settings } = useSettings();
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -38,7 +26,7 @@ export default function Footer() {
               ) : (
                 <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 p-[1.5px]">
                   <div className="w-full h-full bg-white dark:bg-[#07090e] rounded-[10px] flex items-center justify-center font-bold text-slate-900 dark:text-white text-sm">
-                    SS
+                    {settings?.logoName || 'SS'}
                   </div>
                 </div>
               )}

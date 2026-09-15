@@ -394,7 +394,7 @@ export default function AdminChat() {
               </div>
 
               {/* Messages Stream */}
-              <div className="flex-1 p-6 overflow-y-auto space-y-4 custom-scrollbar bg-[#090b10]">
+              <div className="flex-1 p-6 overflow-y-auto space-y-4 custom-scrollbar bg-slate-50/70 dark:bg-[#090b10]">
                 {messages.length === 0 ? (
                   <div className="text-center py-20 text-slate-500 text-xs">
                     No messages in this conversation yet. Send a greeting below!
@@ -410,7 +410,7 @@ export default function AdminChat() {
                         }`}
                       >
                         {!isAdmin && (
-                          <div className="w-7 h-7 rounded-lg bg-zinc-800 border border-zinc-700 text-slate-300 flex items-center justify-center font-bold text-xs shrink-0 mb-1">
+                          <div className="w-7 h-7 rounded-lg bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700 text-slate-700 dark:text-slate-300 flex items-center justify-center font-bold text-xs shrink-0 mb-1">
                             {activeConv.visitorName?.charAt(0) || 'V'}
                           </div>
                         )}
@@ -419,13 +419,13 @@ export default function AdminChat() {
                           className={`max-w-[70%] rounded-2xl p-3.5 text-xs leading-relaxed shadow-md ${
                             isAdmin
                               ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-br-none'
-                              : 'bg-zinc-800/90 text-slate-200 rounded-bl-none border border-zinc-700/60'
+                              : 'bg-white dark:bg-zinc-800/90 text-slate-800 dark:text-slate-200 rounded-bl-none border border-slate-200 dark:border-zinc-700/60'
                           }`}
                         >
                           <p className="break-words">{msg.text}</p>
                           <div
                             className={`flex items-center justify-end gap-1 text-[9px] mt-1.5 ${
-                              isAdmin ? 'text-indigo-200' : 'text-slate-400'
+                              isAdmin ? 'text-indigo-200' : 'text-slate-500 dark:text-slate-400'
                             }`}
                           >
                             <span>

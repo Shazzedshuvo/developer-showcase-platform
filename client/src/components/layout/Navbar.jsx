@@ -2,31 +2,19 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sun, Moon, Menu, X, ArrowUpRight, ShieldCheck } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useSettings } from '../../context/SettingsContext';
 import { Link } from 'react-router-dom';
-import api from '../../api/axios';
 
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
+  const { settings } = useSettings();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [settings, setSettings] = useState({
-    siteName: 'Shazzed Shuvo',
-    tagline: 'Web Specialist & Web Developer',
-    availableForHire: true,
-    logo: '',
-  });
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    api
-      .get('/settings')
-      .then(({ data }) => setSettings(data))
-      .catch(console.error);
   }, []);
 
   const navLinks = [
@@ -63,7 +51,7 @@ export default function Navbar() {
           ) : (
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 p-[1.5px] shadow-lg shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-all duration-300">
               <div className="w-full h-full bg-white dark:bg-[#07090e] rounded-[10px] flex items-center justify-center font-bold text-slate-900 dark:text-white text-base">
-                SS
+                {settings?.logoName || 'SS'}
               </div>
             </div>
           )}

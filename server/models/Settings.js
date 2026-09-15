@@ -14,9 +14,27 @@ const settingsSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    logoName: {
+      type: String,
+      default: 'SS',
+      trim: true,
+    },
+    favicon: {
+      type: String,
+      default: '',
+    },
+    faviconPublicId: {
+      type: String,
+      default: '',
+    },
     siteName: {
       type: String,
       default: 'Shazzed Shuvo',
+      trim: true,
+    },
+    siteTitle: {
+      type: String,
+      default: '',
       trim: true,
     },
     tagline: {
