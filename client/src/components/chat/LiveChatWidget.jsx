@@ -7,27 +7,44 @@ import {
   Sparkles,
   Check,
   CheckCheck,
-  Smile,
   Shield,
-  Zap,
   ArrowRight,
   User,
   Mail,
   Minus,
+  Edit3,
+  AlertCircle,
 } from 'lucide-react';
 import { socket, getVisitorSessionId, getVisitorProfile, setVisitorProfile } from '../../socket';
 import api from '../../api/axios';
+import { useSettings } from '../../context/SettingsContext';
+
+const isValidEmail = (email) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase());
+};
 
 export default function LiveChatWidget() {
+  const { settings } = useSettings();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [unreadCount, setUnreadCount] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
   const [profile, setProfile] = useState(getVisitorProfile());
-  const [showProfileSetup, setShowProfileSetup] = useState(!getVisitorProfile().name);
   const [conversation, setConversation] = useState(null);
   const [isConnected, setIsConnected] = useState(socket.connected);
+
+  // Profile validation & setup state
+  const isProfileComplete = Boolean(
+    profile?.name?.trim()?.length >= 2 &&
+    profile?.email?.trim() &&
+    isValidEmail(profile.email.trim())
+  );
+  const [showProfileSetup, setShowProfileSetup] = useState(!isProfileComplete);
+  const [validationError, setValidationError] = useState('');
+
+  // Scroll auto-prompt popup state
+  const [showScrollPrompt, setShowScrollPrompt] = useState(false);
 
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -69,13 +86,11 @@ export default function LiveChatWidget() {
     // Socket Event: Receive Message
     const handleReceiveMessage = ({ message, conversation: updatedConv }) => {
       setMessages((prev) => {
-        // Prevent duplicates
         if (prev.some((m) => m._id === message._id)) return prev;
         return [...prev, message];
       });
       if (updatedConv) setConversation(updatedConv);
 
-      // Increment unread if chat window is closed and message is from admin
       if (!isOpen && message.sender === 'admin') {
         setUnreadCount((c) => c + 1);
       }
@@ -108,6 +123,23 @@ export default function LiveChatWidget() {
     };
   }, [sessionId, isOpen]);
 
+  // 2. Scroll detection for proactive auto message
+  useEffect(() => {
+    const handleScroll = () => {
+      // Trigger when user has scrolled past 250px and chat is closed
+      if (window.scrollY > 250 && !isOpen) {
+        const alreadyPrompted = sessionStorage.getItem('chat_scroll_auto_prompt_shown');
+        if (!alreadyPrompted) {
+          setShowScrollPrompt(true);
+          sessionStorage.setItem('chat_scroll_auto_prompt_shown', 'true');
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isOpen]);
+
   // Scroll on message change
   useEffect(() => {
     if (isOpen) {
@@ -115,9 +147,10 @@ export default function LiveChatWidget() {
     }
   }, [messages, isTyping, isOpen]);
 
-  // Mark as read when chat is opened
+  // Mark as read and dismiss scroll prompt when opened
   const handleOpen = () => {
     setIsOpen(true);
+    setShowScrollPrompt(false);
     setUnreadCount(0);
     if (conversation?._id) {
       socket.emit('mark_read', {
@@ -131,16 +164,46 @@ export default function LiveChatWidget() {
   // Handle typing input
   const handleInputChange = (e) => {
     setInputText(e.target.value);
-    socket.emit('typing', { sessionId, sender: 'visitor', isTyping: true });
-
-    clearTimeout(typingTimeoutRef.current);
-    typingTimeoutRef.current = setTimeout(() => {
-      socket.emit('typing', { sessionId, sender: 'visitor', isTyping: false });
-    }, 1500);
+    if (isProfileComplete) {
+      socket.emit('typing', { sessionId, sender: 'visitor', isTyping: true });
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => {
+        socket.emit('typing', { sessionId, sender: 'visitor', isTyping: false });
+      }, 1500);
+    }
   };
 
-  // Send message
+  // Handle saving visitor profile with strict validation
+  const handleProfileSave = (e) => {
+    if (e) e.preventDefault();
+    const name = (profile.name || '').trim();
+    const email = (profile.email || '').trim();
+
+    if (!name || name.length < 2) {
+      setValidationError('Please enter your full name (minimum 2 characters).');
+      return;
+    }
+
+    if (!email || !isValidEmail(email)) {
+      setValidationError('Please enter a valid email address.');
+      return;
+    }
+
+    setValidationError('');
+    const updated = { name, email };
+    setProfile(updated);
+    setVisitorProfile(updated);
+    setShowProfileSetup(false);
+  };
+
+  // Send message with mandatory validation check
   const handleSendMessage = (textToSend) => {
+    if (!isProfileComplete) {
+      setShowProfileSetup(true);
+      setValidationError('🔒 Please enter your Name and Email first to start chatting.');
+      return;
+    }
+
     const text = (textToSend || inputText).trim();
     if (!text) return;
 
@@ -152,18 +215,12 @@ export default function LiveChatWidget() {
       sessionId,
       sender: 'visitor',
       text,
-      visitorName: profile.name || `Visitor #${sessionId.slice(-4)}`,
-      visitorEmail: profile.email || '',
+      visitorName: profile.name.trim(),
+      visitorEmail: profile.email.trim(),
     });
 
     socket.emit('typing', { sessionId, sender: 'visitor', isTyping: false });
     setInputText('');
-  };
-
-  const handleProfileSave = (e) => {
-    e.preventDefault();
-    setVisitorProfile(profile);
-    setShowProfileSetup(false);
   };
 
   const quickPrompts = [
@@ -174,6 +231,62 @@ export default function LiveChatWidget() {
 
   return (
     <>
+      {/* ─── Scroll-triggered Auto Message Teaser ──────────────────── */}
+      <AnimatePresence>
+        {showScrollPrompt && !isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 25, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 15, scale: 0.9 }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="fixed bottom-24 right-4 sm:right-6 z-50 max-w-[320px] p-4 rounded-3xl bg-white/95 dark:bg-[#0c0f17]/95 border border-indigo-500/30 dark:border-indigo-500/40 shadow-2xl shadow-indigo-600/20 backdrop-blur-2xl select-none"
+          >
+            <div className="flex items-start gap-3">
+              <div className="relative shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 p-[1.5px] shadow-md shadow-indigo-500/25">
+                  <div className="w-full h-full bg-[#0c0f17] rounded-[10px] flex items-center justify-center font-bold text-white text-xs">
+                    {settings?.logoName || 'SS'}
+                  </div>
+                </div>
+                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white dark:border-zinc-900 animate-pulse" />
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white">
+                      {settings?.siteName || 'Shazzed Shuvo'}
+                    </span>
+                    <span className="px-1.5 py-0.2 rounded text-[8px] font-extrabold bg-indigo-500/20 text-indigo-600 dark:text-indigo-400">
+                      LIVE
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setShowScrollPrompt(false)}
+                    className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer"
+                    title="Dismiss"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                <p className="text-xs text-slate-700 dark:text-slate-300 mt-1.5 leading-snug font-medium">
+                  Hi! For any help or concern, please message us 👋
+                </p>
+
+                <button
+                  onClick={handleOpen}
+                  className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-semibold hover:from-indigo-500 hover:to-purple-500 transition-all cursor-pointer shadow-md shadow-indigo-600/20"
+                >
+                  <MessageSquare className="w-3 h-3" />
+                  <span>Send a message</span>
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ─── Floating Launcher Button ─────────────────────────────── */}
       <div className="fixed bottom-6 right-6 z-50 select-none">
         <motion.button
@@ -188,7 +301,6 @@ export default function LiveChatWidget() {
             ) : (
               <MessageSquare className="w-5 h-5 animate-pulse-subtle" />
             )}
-            {/* Online Pulse Dot */}
             <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
@@ -196,7 +308,7 @@ export default function LiveChatWidget() {
           </div>
 
           <span className="hidden sm:inline-block text-xs font-bold tracking-wide">
-            {isOpen ? 'Close Chat' : 'Chat with Shazzed'}
+            {isOpen ? 'Close Chat' : `Chat with ${settings?.siteName ? settings.siteName.split(' ')[0] : 'Shazzed'}`}
           </span>
 
           {/* Unread Message Badge */}
@@ -216,15 +328,15 @@ export default function LiveChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.95 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="fixed bottom-24 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[380px] h-[540px] max-h-[80vh] flex flex-col rounded-3xl bg-white dark:bg-[#0c0f17] border border-slate-200 dark:border-zinc-800/90 shadow-2xl shadow-black/30 overflow-hidden backdrop-blur-2xl"
+            className="fixed bottom-24 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[380px] h-[550px] max-h-[82vh] flex flex-col rounded-3xl bg-white dark:bg-[#0c0f17] border border-slate-200 dark:border-zinc-800/90 shadow-2xl shadow-black/30 overflow-hidden backdrop-blur-2xl"
           >
             {/* Window Header */}
-            <div className="px-5 py-4 bg-gradient-to-r from-indigo-900/30 via-purple-900/20 to-zinc-900/40 border-b border-slate-200 dark:border-zinc-800/80 flex items-center justify-between">
+            <div className="px-5 py-4 bg-gradient-to-r from-indigo-900/20 via-purple-900/15 to-zinc-900/30 border-b border-slate-200 dark:border-zinc-800/80 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <div className="w-10 h-10 rounded-xl overflow-hidden bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 p-[1.5px]">
                     <div className="w-full h-full bg-[#0c0f17] rounded-[10px] flex items-center justify-center font-bold text-white text-sm">
-                      SS
+                      {settings?.logoName || 'SS'}
                     </div>
                   </div>
                   <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white dark:border-zinc-900"></span>
@@ -233,7 +345,7 @@ export default function LiveChatWidget() {
                 <div>
                   <div className="flex items-center gap-1.5">
                     <h4 className="font-bold text-slate-900 dark:text-white text-sm tracking-tight">
-                      Shazzed Shuvo
+                      {settings?.siteName || 'Shazzed Shuvo'}
                     </h4>
                     <span className="px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30">
                       LIVE
@@ -249,44 +361,100 @@ export default function LiveChatWidget() {
               <button
                 onClick={() => setIsOpen(false)}
                 className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                title="Close chat window"
               >
                 <Minus className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Profile Setup Bar (Optional details) */}
-            {showProfileSetup ? (
-              <div className="p-4 bg-indigo-50 dark:bg-indigo-950/40 border-b border-indigo-100 dark:border-indigo-900/40">
-                <form onSubmit={handleProfileSave} className="space-y-2">
-                  <div className="flex items-center justify-between text-xs text-indigo-700 dark:text-indigo-300 font-semibold mb-1">
-                    <span>Introduce Yourself (Optional):</span>
-                    <button
-                      type="button"
-                      onClick={() => setShowProfileSetup(false)}
-                      className="text-[10px] text-slate-500 hover:underline cursor-pointer"
-                    >
-                      Skip
-                    </button>
+            {/* Profile Status Badge (When profile is set and setup is hidden) */}
+            {isProfileComplete && !showProfileSetup && (
+              <div className="px-4 py-1.5 bg-slate-50 dark:bg-zinc-900/50 border-b border-slate-100 dark:border-zinc-800/60 flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-400">
+                <div className="flex items-center gap-1.5 truncate">
+                  <User className="w-3 h-3 text-indigo-500 shrink-0" />
+                  <span className="truncate">
+                    Chatting as <strong className="text-slate-800 dark:text-slate-200">{profile.name}</strong>
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowProfileSetup(true)}
+                  className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 font-semibold shrink-0 cursor-pointer"
+                  title="Update your contact info"
+                >
+                  <Edit3 className="w-2.5 h-2.5" />
+                  <span>Edit</span>
+                </button>
+              </div>
+            )}
+
+            {/* Mandatory Profile Setup Card */}
+            {(showProfileSetup || !isProfileComplete) ? (
+              <div className="p-4 bg-indigo-50/90 dark:bg-indigo-950/50 border-b border-indigo-100 dark:border-indigo-900/50">
+                <form onSubmit={handleProfileSave} className="space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-indigo-900 dark:text-indigo-200 flex items-center gap-1.5">
+                      <Shield className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                      <span>Identification Required</span>
+                    </span>
+                    {isProfileComplete && (
+                      <button
+                        type="button"
+                        onClick={() => setShowProfileSetup(false)}
+                        className="text-[10px] text-slate-500 hover:underline cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    )}
                   </div>
-                  <input
-                    type="text"
-                    placeholder="Your Name"
-                    className="input !py-1.5 !text-xs !bg-white dark:!bg-zinc-900"
-                    value={profile.name}
-                    onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                  />
-                  <input
-                    type="email"
-                    placeholder="Your Email (for offline reply)"
-                    className="input !py-1.5 !text-xs !bg-white dark:!bg-zinc-900"
-                    value={profile.email}
-                    onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                  />
+
+                  <p className="text-[11px] text-indigo-700/80 dark:text-indigo-300/80 leading-tight">
+                    Please provide your name and email to start chatting so we can assist you directly.
+                  </p>
+
+                  {validationError && (
+                    <div className="p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-[11px] flex items-center gap-1.5">
+                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                      <span>{validationError}</span>
+                    </div>
+                  )}
+
+                  <div className="relative">
+                    <User className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                    <input
+                      type="text"
+                      required
+                      placeholder="Your Name (e.g. John Smith)"
+                      className="input !py-1.5 !pl-8 !text-xs !bg-white dark:!bg-zinc-900"
+                      value={profile.name || ''}
+                      onChange={(e) => {
+                        setValidationError('');
+                        setProfile({ ...profile, name: e.target.value });
+                      }}
+                    />
+                  </div>
+
+                  <div className="relative">
+                    <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
+                    <input
+                      type="email"
+                      required
+                      placeholder="Your Email (for notifications)"
+                      className="input !py-1.5 !pl-8 !text-xs !bg-white dark:!bg-zinc-900"
+                      value={profile.email || ''}
+                      onChange={(e) => {
+                        setValidationError('');
+                        setProfile({ ...profile, email: e.target.value });
+                      }}
+                    />
+                  </div>
+
                   <button
                     type="submit"
-                    className="w-full btn-primary !py-1.5 !text-xs !rounded-lg"
+                    className="w-full btn-primary !py-2 !text-xs !rounded-xl font-semibold flex items-center justify-center gap-1.5 shadow-md shadow-indigo-600/20"
                   >
-                    Save &amp; Continue
+                    <span>Confirm &amp; Start Chatting</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </form>
               </div>
@@ -297,15 +465,15 @@ export default function LiveChatWidget() {
               {/* Automated Welcome Message */}
               <div className="flex items-start gap-2.5">
                 <div className="w-7 h-7 rounded-lg bg-indigo-600/20 text-indigo-500 border border-indigo-500/30 flex items-center justify-center font-bold text-xs shrink-0">
-                  SS
+                  {settings?.logoName ? settings.logoName.slice(0, 2) : 'SS'}
                 </div>
-                <div className="max-w-[80%] rounded-2xl rounded-tl-none p-3.5 bg-slate-100 dark:bg-zinc-800/90 text-slate-800 dark:text-slate-200 text-xs leading-relaxed shadow-sm border border-slate-200/60 dark:border-zinc-700/60">
+                <div className="max-w-[85%] rounded-2xl rounded-tl-none p-3.5 bg-slate-100 dark:bg-zinc-800/90 text-slate-800 dark:text-slate-200 text-xs leading-relaxed shadow-sm border border-slate-200/60 dark:border-zinc-700/60">
                   <p className="font-semibold text-indigo-600 dark:text-indigo-400 mb-1 flex items-center gap-1">
                     <Sparkles className="w-3 h-3 text-amber-400" />
-                    <span>Shazzed Shuvo</span>
+                    <span>{settings?.siteName || 'Shazzed Shuvo'}</span>
                   </p>
                   <p>
-                    Hi there! 👋 Welcome to my showcase platform. Feel free to ask any question about Wix Studio, Squarespace, Webflow, or custom web projects!
+                    Hi! For any help or concern, please message us 👋 Feel free to ask any question about Wix Studio, Squarespace, Webflow, or custom web projects!
                   </p>
                 </div>
               </div>
@@ -322,7 +490,7 @@ export default function LiveChatWidget() {
                   >
                     {!isVisitor && (
                       <div className="w-6 h-6 rounded-md bg-indigo-600/20 text-indigo-400 flex items-center justify-center text-[10px] font-bold shrink-0 mb-1">
-                        SS
+                        {settings?.logoName ? settings.logoName.slice(0, 2) : 'SS'}
                       </div>
                     )}
 
@@ -364,10 +532,10 @@ export default function LiveChatWidget() {
               {isTyping && (
                 <div className="flex items-center gap-2 text-xs text-slate-500 italic">
                   <div className="w-6 h-6 rounded-md bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-[10px] font-bold">
-                    SS
+                    {settings?.logoName ? settings.logoName.slice(0, 2) : 'SS'}
                   </div>
                   <span className="flex items-center gap-1">
-                    <span>Shazzed is typing</span>
+                    <span>{settings?.siteName ? settings.siteName.split(' ')[0] : 'Shazzed'} is typing</span>
                     <span className="flex gap-0.5">
                       <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce"></span>
                       <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce delay-150"></span>
@@ -380,14 +548,14 @@ export default function LiveChatWidget() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Quick Prompts Pills (Shown when fewer than 2 messages sent) */}
+            {/* Quick Prompts Pills */}
             {messages.length === 0 && (
               <div className="px-4 py-2 border-t border-slate-100 dark:border-zinc-800/60 flex flex-wrap gap-1.5 bg-slate-50/50 dark:bg-zinc-900/30">
                 {quickPrompts.map((prompt, pIdx) => (
                   <button
                     key={pIdx}
                     onClick={() => handleSendMessage(prompt)}
-                    className="text-[11px] px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-slate-300 hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors text-left"
+                    className="text-[11px] px-2.5 py-1 rounded-lg bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-slate-300 hover:border-indigo-500/40 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors text-left cursor-pointer"
                   >
                     {prompt}
                   </button>
@@ -397,28 +565,39 @@ export default function LiveChatWidget() {
 
             {/* Input Bar */}
             <div className="p-3 bg-white dark:bg-[#0c0f17] border-t border-slate-200 dark:border-zinc-800/80">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSendMessage();
-                }}
-                className="flex items-center gap-2"
-              >
-                <input
-                  type="text"
-                  placeholder="Type a message..."
-                  className="input !py-2 !text-xs !rounded-xl flex-1 !bg-slate-50 dark:!bg-zinc-900/80"
-                  value={inputText}
-                  onChange={handleInputChange}
-                />
-                <button
-                  type="submit"
-                  disabled={!inputText.trim()}
-                  className="p-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-600/20 disabled:opacity-40 disabled:cursor-not-allowed hover:from-indigo-500 hover:to-purple-500 transition-all cursor-pointer"
+              {isProfileComplete ? (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }}
+                  className="flex items-center gap-2"
                 >
-                  <Send className="w-4 h-4" />
+                  <input
+                    type="text"
+                    placeholder="Type a message..."
+                    className="input !py-2 !text-xs !rounded-xl flex-1 !bg-slate-50 dark:!bg-zinc-900/80"
+                    value={inputText}
+                    onChange={handleInputChange}
+                  />
+                  <button
+                    type="submit"
+                    disabled={!inputText.trim()}
+                    className="p-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-600/20 disabled:opacity-40 disabled:cursor-not-allowed hover:from-indigo-500 hover:to-purple-500 transition-all cursor-pointer"
+                    title="Send message"
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
+                </form>
+              ) : (
+                <button
+                  onClick={() => setShowProfileSetup(true)}
+                  className="w-full py-2.5 px-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/50 text-indigo-700 dark:text-indigo-300 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors"
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                  <span>Enter Name &amp; Email above to unlock chat</span>
                 </button>
-              </form>
+              )}
             </div>
           </motion.div>
         )}
