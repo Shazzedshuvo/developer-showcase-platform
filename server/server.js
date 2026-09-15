@@ -28,13 +28,30 @@ const PORT = process.env.PORT || 5000;
 connectDB();
 
 // Setup Socket.io
-setupSocket(httpServer, process.env.CLIENT_URL || 'http://localhost:5173');
+setupSocket(httpServer);
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5000',
+  'http://localhost:3000',
+  'https://shuvos-projects.vercel.app',
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
 app.use(
   cors({
-    // Allow requests from Vite dev server; update for production
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.vercel.app') ||
+        origin.includes('localhost')
+      ) {
+        return callback(null, true);
+      }
+      return callback(null, true); // Permissive for production deployment
+    },
     credentials: true, // Required for httpOnly cookie forwarding
   })
 );

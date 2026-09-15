@@ -55,8 +55,17 @@ export default function AdminChat() {
   useEffect(() => {
     fetchConversations();
 
-    // Join Admin Inbox Socket room
-    socket.emit('join_session', { sessionId: 'admin_inbox', isAdmin: true });
+    const handleConnect = () => {
+      socket.emit('join_session', { sessionId: 'admin_inbox', isAdmin: true });
+      if (activeConv?.sessionId) {
+        socket.emit('join_session', { sessionId: activeConv.sessionId, isAdmin: true });
+      }
+    };
+
+    socket.on('connect', handleConnect);
+    if (socket.connected) {
+      handleConnect();
+    }
 
     // Handle inbox update (when any visitor sends a message)
     const handleInboxUpdated = ({ conversation: updatedConv, message }) => {
@@ -156,6 +165,10 @@ export default function AdminChat() {
   const handleSendMessage = (textToSend) => {
     const text = (textToSend || inputText).trim();
     if (!text || !activeConv) return;
+
+    if (!socket.connected) {
+      socket.connect();
+    }
 
     socket.emit('send_message', {
       sessionId: activeConv.sessionId,

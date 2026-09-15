@@ -1,12 +1,22 @@
 import { io } from 'socket.io-client';
 
 const getSocketUrl = () => {
-  const apiUrl = import.meta.env.VITE_API_URL || '';
+  const apiUrl = (import.meta.env.VITE_API_URL || '').trim();
   if (apiUrl.startsWith('http')) {
-    // Remove trailing /api if present to get server root
-    return apiUrl.replace(/\/api\/?$/, '');
+    try {
+      const parsed = new URL(apiUrl);
+      return parsed.origin;
+    } catch {
+      return apiUrl.replace(/\/api\/?.*$/i, '').trim();
+    }
   }
-  // Localhost development default
+  if (
+    typeof window !== 'undefined' &&
+    window.location.hostname !== 'localhost' &&
+    window.location.hostname !== '127.0.0.1'
+  ) {
+    return 'https://developer-showcase-platform.onrender.com';
+  }
   return 'http://localhost:5000';
 };
 
@@ -14,7 +24,12 @@ const getSocketUrl = () => {
 export const socket = io(getSocketUrl(), {
   autoConnect: true,
   withCredentials: true,
-  transports: ['websocket', 'polling'],
+  transports: ['polling', 'websocket'],
+  reconnection: true,
+  reconnectionAttempts: Infinity,
+  reconnectionDelay: 1000,
+  reconnectionDelayMax: 5000,
+  timeout: 20000,
 });
 
 // Helper to get or generate persistent visitor session ID

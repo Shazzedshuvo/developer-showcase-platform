@@ -27,6 +27,7 @@ export default function LiveChatWidget() {
   const [profile, setProfile] = useState(getVisitorProfile());
   const [showProfileSetup, setShowProfileSetup] = useState(!getVisitorProfile().name);
   const [conversation, setConversation] = useState(null);
+  const [isConnected, setIsConnected] = useState(socket.connected);
 
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -39,8 +40,22 @@ export default function LiveChatWidget() {
 
   // 1. Initial Load & Join Session Room
   useEffect(() => {
-    // Join socket room
-    socket.emit('join_session', { sessionId, isAdmin: false });
+    const handleConnect = () => {
+      setIsConnected(true);
+      socket.emit('join_session', { sessionId, isAdmin: false });
+    };
+
+    const handleDisconnect = () => {
+      setIsConnected(false);
+    };
+
+    socket.on('connect', handleConnect);
+    socket.on('disconnect', handleDisconnect);
+    if (socket.connected) {
+      handleConnect();
+    } else {
+      socket.connect();
+    }
 
     // Fetch conversation & message history
     api
@@ -85,6 +100,8 @@ export default function LiveChatWidget() {
     socket.on('messages_read', handleMessagesRead);
 
     return () => {
+      socket.off('connect', handleConnect);
+      socket.off('disconnect', handleDisconnect);
       socket.off('receive_message', handleReceiveMessage);
       socket.off('user_typing', handleUserTyping);
       socket.off('messages_read', handleMessagesRead);
@@ -126,6 +143,10 @@ export default function LiveChatWidget() {
   const handleSendMessage = (textToSend) => {
     const text = (textToSend || inputText).trim();
     if (!text) return;
+
+    if (!socket.connected) {
+      socket.connect();
+    }
 
     socket.emit('send_message', {
       sessionId,
@@ -219,8 +240,8 @@ export default function LiveChatWidget() {
                     </span>
                   </div>
                   <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>Online • Direct Chat</span>
+                    <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'}`}></span>
+                    <span>{isConnected ? 'Online • Direct Chat' : 'Connecting...'}</span>
                   </p>
                 </div>
               </div>
