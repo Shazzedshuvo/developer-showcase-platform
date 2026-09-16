@@ -133,7 +133,16 @@ export default function PublicPortfolio() {
         {selectedProject && (
           <ProjectModal
             project={selectedProject}
+            projects={filteredProjects}
+            onSelectProject={setSelectedProject}
             onClose={() => setSelectedProject(null)}
+            onInquire={(proj) => {
+              setSelectedProject(null);
+              setTimeout(() => {
+                const el = document.getElementById('contact');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 150);
+            }}
           />
         )}
       </AnimatePresence>
