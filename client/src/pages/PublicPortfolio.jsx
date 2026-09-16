@@ -43,6 +43,7 @@ export default function PublicPortfolio() {
   // Filter projects on category click
   const filteredProjects = useMemo(() => {
     if (activeCategory === 'all') return allProjects;
+    if (activeCategory === 'pinned') return allProjects.filter((p) => p.isPinned);
     if (activeCategory === 'recent') return allProjects.filter((p) => p.isRecentActive || p.isRecent);
     return allProjects.filter((p) => p.category?.slug === activeCategory);
   }, [allProjects, activeCategory]);
@@ -51,6 +52,7 @@ export default function PublicPortfolio() {
   const categoryCounts = useMemo(() => {
     const counts = {
       total: allProjects.length,
+      pinned: allProjects.filter((p) => p.isPinned).length,
       recent: allProjects.filter((p) => p.isRecentActive || p.isRecent).length,
     };
     allProjects.forEach((p) => {

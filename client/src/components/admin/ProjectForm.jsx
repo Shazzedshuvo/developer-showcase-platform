@@ -19,6 +19,7 @@ export default function ProjectForm({ onClose, onSaved, editData }) {
     review: '',
     isFeatured: false,
     isRecent: true,
+    isPinned: false,
   });
   const [categories, setCategories] = useState([]);
   const [reviews, setReviews] = useState([]);
@@ -45,6 +46,7 @@ export default function ProjectForm({ onClose, onSaved, editData }) {
         review: editData.review?._id || editData.review || '',
         isFeatured: editData.isFeatured || false,
         isRecent: editData.isRecent !== undefined ? editData.isRecent : true,
+        isPinned: editData.isPinned || false,
       });
     }
   }, [editData]);
@@ -156,8 +158,21 @@ export default function ProjectForm({ onClose, onSaved, editData }) {
         <input className="input" type="url" value={form.demoUrl} onChange={(e) => setForm((f) => ({ ...f, demoUrl: e.target.value }))} placeholder="https://…" />
       </div>
 
-      {/* Featured & Recent Badges Toggle */}
-      <div className="grid sm:grid-cols-2 gap-4 p-3 rounded-xl bg-zinc-900 border border-zinc-800">
+      {/* Pin, Featured & Recent Badges Toggle */}
+      <div className="grid sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-zinc-900 border border-zinc-800">
+        <div className="flex items-center gap-2.5">
+          <input
+            type="checkbox"
+            id="isPinned"
+            checked={form.isPinned}
+            onChange={(e) => setForm((f) => ({ ...f, isPinned: e.target.checked }))}
+            className="w-4 h-4 rounded accent-indigo-500 cursor-pointer"
+          />
+          <label htmlFor="isPinned" className="text-xs font-semibold text-amber-400 cursor-pointer">
+            📌 Pin to Top (Max 15)
+          </label>
+        </div>
+
         <div className="flex items-center gap-2.5">
           <input
             type="checkbox"
@@ -167,7 +182,7 @@ export default function ProjectForm({ onClose, onSaved, editData }) {
             className="w-4 h-4 rounded accent-indigo-500 cursor-pointer"
           />
           <label htmlFor="isRecent" className="text-xs font-semibold text-slate-300 cursor-pointer">
-            🔥 Mark as Recent Project (1 Year Top Priority)
+            🔥 Recent Project
           </label>
         </div>
 

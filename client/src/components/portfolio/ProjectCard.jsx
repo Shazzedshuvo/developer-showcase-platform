@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ExternalLink, Eye, Star, Globe, ArrowUpRight } from 'lucide-react';
+import { ExternalLink, Eye, Star, Globe, ArrowUpRight, Pin } from 'lucide-react';
 
 export default function ProjectCard({ project, onSelect }) {
   const [imageError, setImageError] = useState(false);
@@ -34,7 +34,9 @@ export default function ProjectCard({ project, onSelect }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.35 }}
-      className="card group overflow-hidden flex flex-col card-hover-effect hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/10 cursor-pointer"
+      className={`card group overflow-hidden flex flex-col card-hover-effect hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/10 cursor-pointer ${
+        project.isPinned ? 'border-amber-500/40 dark:border-amber-500/30' : ''
+      }`}
       onClick={() => onSelect(project)}
     >
       {/* Thumbnail Container */}
@@ -97,7 +99,14 @@ export default function ProjectCard({ project, onSelect }) {
         )}
 
         {/* Top Badges */}
-        <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
+        <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 flex-wrap justify-end">
+          {project.isPinned && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-amber-500 text-zinc-950 shadow-md shadow-amber-500/20 backdrop-blur-md">
+              <Pin className="w-3 h-3 fill-zinc-950" />
+              <span>Pinned</span>
+            </span>
+          )}
+
           {project.isRecentActive && (
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-rose-500/20 text-rose-800 dark:text-rose-300 border border-rose-500/40 backdrop-blur-md shadow-md animate-pulse">
               <span>🔥 Recent</span>
@@ -105,8 +114,8 @@ export default function ProjectCard({ project, onSelect }) {
           )}
 
           {project.isFeatured && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/40 backdrop-blur-md shadow-md">
-              <Star className="w-3 h-3 fill-amber-400" />
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-indigo-500/20 text-indigo-800 dark:text-indigo-300 border border-indigo-500/40 backdrop-blur-md shadow-md">
+              <Star className="w-3 h-3 fill-indigo-400" />
               Featured
             </span>
           )}

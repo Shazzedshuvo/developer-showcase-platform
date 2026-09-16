@@ -58,6 +58,16 @@ const projectSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    // Pinned project flag (max 15 allowed system-wide)
+    isPinned: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    pinnedAt: {
+      type: Date,
+      default: null,
+    },
     // Recent project flag with 1 year validity
     isRecent: {
       type: Boolean,

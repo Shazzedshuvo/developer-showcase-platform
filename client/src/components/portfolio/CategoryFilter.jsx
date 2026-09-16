@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 export default function CategoryFilter({ categories = [], activeSlug = 'all', onChange, counts = {} }) {
   const allTabs = [
     { name: 'All Platforms', slug: 'all' },
+    ...(counts.pinned > 0 ? [{ name: '📌 Pinned', slug: 'pinned' }] : []),
     { name: '🔥 Recent Work', slug: 'recent' },
     ...categories,
   ];

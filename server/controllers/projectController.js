@@ -16,6 +16,10 @@ const getProjects = asyncHandler(async (req, res) => {
     filter.isFeatured = true;
   }
 
+  if (req.query.pinned === 'true') {
+    filter.isPinned = true;
+  }
+
   // Filter by category slug — resolve slug → ObjectId
   if (req.query.category) {
     const Category = require('../models/Category');
@@ -26,7 +30,7 @@ const getProjects = asyncHandler(async (req, res) => {
   const projects = await Project.find(filter)
     .populate('category', 'name slug')
     .populate('review', 'clientName platform rating image')
-    .sort({ isRecent: -1, isFeatured: -1, createdAt: -1 });
+    .sort({ isPinned: -1, pinnedAt: -1, isRecent: -1, isFeatured: -1, createdAt: -1 });
 
   // Map to attach isRecentActive flag based on 1-year expiration
   const now = new Date();
@@ -38,8 +42,15 @@ const getProjects = asyncHandler(async (req, res) => {
     return doc;
   });
 
-  // Sort active recent projects first
+  // Sort: pinned first (newest pinned first), then recent active, then featured, then newest created
   processed.sort((a, b) => {
+    if (a.isPinned && !b.isPinned) return -1;
+    if (!a.isPinned && b.isPinned) return 1;
+    if (a.isPinned && b.isPinned) {
+      const timeA = a.pinnedAt ? new Date(a.pinnedAt).getTime() : 0;
+      const timeB = b.pinnedAt ? new Date(b.pinnedAt).getTime() : 0;
+      if (timeA !== timeB) return timeB - timeA;
+    }
     if (a.isRecentActive && !b.isRecentActive) return -1;
     if (!a.isRecentActive && b.isRecentActive) return 1;
     if (a.isFeatured && !b.isFeatured) return -1;
@@ -78,11 +89,21 @@ const getProjectBySlug = asyncHandler(async (req, res) => {
  * @body    multipart/form-data — fields + coverImage file + gallery files
  */
 const createProject = asyncHandler(async (req, res) => {
-  const { title, slug, description, demoUrl, category, review, isFeatured, isRecent } = req.body;
+  const { title, slug, description, demoUrl, category, review, isFeatured, isRecent, isPinned } = req.body;
 
   if (!title || !description || !category) {
     res.status(400);
     throw new Error('Title, description, and category are required');
+  }
+
+  // Check pin limit if pinning
+  const wantsPin = isPinned === 'true' || isPinned === true;
+  if (wantsPin) {
+    const pinnedCount = await Project.countDocuments({ isPinned: true });
+    if (pinnedCount >= 15) {
+      res.status(400);
+      throw new Error('Maximum 15 projects can be pinned. Please unpin a project first.');
+    }
   }
 
   // Ensure coverImage was uploaded
@@ -128,6 +149,8 @@ const createProject = asyncHandler(async (req, res) => {
     isFeatured: isFeatured === 'true' || isFeatured === true,
     isRecent: isRecent !== 'false' && isRecent !== false, // Defaults to true
     recentUntil: oneYearExpiry,
+    isPinned: wantsPin,
+    pinnedAt: wantsPin ? new Date() : null,
   });
 
   const populated = await project.populate(['category', 'review']);
@@ -147,7 +170,7 @@ const updateProject = asyncHandler(async (req, res) => {
     throw new Error('Project not found');
   }
 
-  const { title, slug, description, demoUrl, category, review, isFeatured, isRecent } = req.body;
+  const { title, slug, description, demoUrl, category, review, isFeatured, isRecent, isPinned } = req.body;
 
   if (title) project.title = title;
   if (slug) project.slug = slugify(slug, { lower: true, strict: true });
@@ -160,6 +183,22 @@ const updateProject = asyncHandler(async (req, res) => {
     project.isRecent = isRecent === 'true' || isRecent === true;
     if (project.isRecent && !project.recentUntil) {
       project.recentUntil = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+    }
+  }
+
+  if (isPinned !== undefined) {
+    const wantsPin = isPinned === 'true' || isPinned === true;
+    if (wantsPin && !project.isPinned) {
+      const pinnedCount = await Project.countDocuments({ isPinned: true });
+      if (pinnedCount >= 15) {
+        res.status(400);
+        throw new Error('Maximum 15 projects can be pinned. Please unpin a project first.');
+      }
+      project.isPinned = true;
+      project.pinnedAt = new Date();
+    } else if (!wantsPin && project.isPinned) {
+      project.isPinned = false;
+      project.pinnedAt = null;
     }
   }
 
@@ -189,7 +228,51 @@ const updateProject = asyncHandler(async (req, res) => {
 
   const updated = await project.save();
   await updated.populate(['category', 'review']);
-  res.json(updated);
+  const doc = updated.toObject();
+  const now = new Date();
+  doc.isRecentActive = Boolean(
+    doc.isRecent && (!doc.recentUntil || new Date(doc.recentUntil) > now)
+  );
+  res.json(doc);
+});
+
+/**
+ * @route   PATCH /api/projects/:id/pin
+ * @access  Admin
+ */
+const togglePinProject = asyncHandler(async (req, res) => {
+  const project = await Project.findById(req.params.id);
+  if (!project) {
+    res.status(404);
+    throw new Error('Project not found');
+  }
+
+  if (!project.isPinned) {
+    const pinnedCount = await Project.countDocuments({ isPinned: true });
+    if (pinnedCount >= 15) {
+      res.status(400);
+      throw new Error('Maximum 15 projects can be pinned. Please unpin a project first.');
+    }
+    project.isPinned = true;
+    project.pinnedAt = new Date();
+  } else {
+    project.isPinned = false;
+    project.pinnedAt = null;
+  }
+
+  const updated = await project.save();
+  await updated.populate(['category', 'review']);
+
+  const now = new Date();
+  const doc = updated.toObject();
+  doc.isRecentActive = Boolean(
+    doc.isRecent && (!doc.recentUntil || new Date(doc.recentUntil) > now)
+  );
+
+  res.json({
+    message: project.isPinned ? 'Project pinned successfully' : 'Project unpinned successfully',
+    project: doc,
+  });
 });
 
 /**
@@ -217,4 +300,11 @@ const deleteProject = asyncHandler(async (req, res) => {
   res.json({ message: 'Project deleted' });
 });
 
-module.exports = { getProjects, getProjectBySlug, createProject, updateProject, deleteProject };
+module.exports = {
+  getProjects,
+  getProjectBySlug,
+  createProject,
+  updateProject,
+  deleteProject,
+  togglePinProject,
+};

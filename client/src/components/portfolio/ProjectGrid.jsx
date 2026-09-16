@@ -6,7 +6,8 @@ import ProjectCard from './ProjectCard';
 export default function ProjectGrid({ projects = [], loading = false, onSelect }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('featured');
-  const [visibleCount, setVisibleCount] = useState(12);
+  const pinnedCount = useMemo(() => projects.filter((p) => p.isPinned).length, [projects]);
+  const [visibleCount, setVisibleCount] = useState(15);
 
   // Filter & Sort
   const filteredProjects = useMemo(() => {
@@ -23,15 +24,29 @@ export default function ProjectGrid({ projects = [], loading = false, onSelect }
     }
 
     if (sortBy === 'featured') {
-      result.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0));
+      result.sort((a, b) => {
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+        if (a.isPinned && b.isPinned) {
+          const timeA = a.pinnedAt ? new Date(a.pinnedAt).getTime() : 0;
+          const timeB = b.pinnedAt ? new Date(b.pinnedAt).getTime() : 0;
+          if (timeA !== timeB) return timeB - timeA;
+        }
+        return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
+      });
     } else if (sortBy === 'alphabetical') {
-      result.sort((a, b) => a.title.localeCompare(b.title));
+      result.sort((a, b) => {
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+        return a.title.localeCompare(b.title);
+      });
     }
 
     return result;
   }, [projects, searchQuery, sortBy]);
 
-  const displayedProjects = filteredProjects.slice(0, visibleCount);
+  const effectiveVisibleCount = Math.max(visibleCount, pinnedCount);
+  const displayedProjects = filteredProjects.slice(0, effectiveVisibleCount);
 
   if (loading) {
     return (
@@ -116,13 +131,13 @@ export default function ProjectGrid({ projects = [], loading = false, onSelect }
       )}
 
       {/* Load More Button */}
-      {visibleCount < filteredProjects.length && (
+      {effectiveVisibleCount < filteredProjects.length && (
         <div className="flex justify-center pt-8">
           <button
-            onClick={() => setVisibleCount((prev) => prev + 12)}
+            onClick={() => setVisibleCount((prev) => Math.max(prev, effectiveVisibleCount) + 12)}
             className="btn-secondary group flex items-center gap-2 !px-8 !py-3 font-semibold text-sm cursor-pointer"
           >
-            <span>Load More Projects ({filteredProjects.length - visibleCount} remaining)</span>
+            <span>Load More Projects ({filteredProjects.length - effectiveVisibleCount} remaining)</span>
             <ChevronDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
           </button>
         </div>
